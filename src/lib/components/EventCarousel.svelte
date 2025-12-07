@@ -15,11 +15,11 @@
 			opts={{
 				align: 'start',
 			}}
-			class="w-full max-w-7xl"
+			class="w-full max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
 		>
 			<Carousel.Content>
 				{#each wpEvents as wpEvent, i (i)}
-					<Carousel.Item class="md:basis-1/2 lg:basis-1/3">
+					<Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
 						<div class="p-1">
 							<EventCard {wpEvent} />
 						</div>

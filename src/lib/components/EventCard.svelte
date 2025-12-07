@@ -5,7 +5,7 @@
 	export let wpEvent: WpEvent;
 </script>
 
-<Card.Root class="w-full max-w-sm">
+<Card.Root>
 	<Card.Header>
 		<Card.Title class="line-clamp-1">{wpEvent.title.rendered}</Card.Title>
 		<Card.Description>
