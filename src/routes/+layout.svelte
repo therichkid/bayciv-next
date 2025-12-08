@@ -14,9 +14,8 @@
 
 <ModeWatcher />
 
-<div class="flex max-h-32 w-full items-center justify-center overflow-hidden">
-	<BayCivBanner />
-</div>
+<BayCivBanner />
+
 <header class="sticky top-0 z-50 flex w-full items-center justify-center bg-background">
 	<Navigation />
 </header>

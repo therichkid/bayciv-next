@@ -12,7 +12,7 @@
 
 <div class="my-6 w-full">
 	{#if postState.isLoading}
-		<p>Lade Events...</p>
+		<p>Lade Neuigkeiten...</p>
 	{:else if postState.posts.length}
 		<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each postState.posts as post, i (post.id)}
