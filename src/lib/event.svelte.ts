@@ -2,7 +2,7 @@ import { SvelteDate, SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity'
 
 export interface WpEvent {
 	id: number;
-	link: string;
+	slug: string;
 	title: {
 		rendered: string;
 	};
@@ -17,6 +17,13 @@ export interface WpEvent {
 		zeit_von: string;
 		zeit_bis: string;
 	};
+	_embedded?: {
+		'wp:featuredmedia'?: {
+			source_url: string;
+			caption: string;
+			alt_text?: string;
+		}[];
+	};
 }
 
 export const eventState = $state<{ events: WpEvent[]; isLoading: boolean }>({
@@ -30,6 +37,7 @@ export const fetchEvents = async (): Promise<WpEvent[]> => {
 	const url = new SvelteURL('https://admin.bayciv.de/wp-json/wp/v2/events');
 	const params = new SvelteURLSearchParams({
 		per_page: '10',
+		_embed: 'true',
 		meta_key: 'event_datum',
 		meta_value: new SvelteDate().toISOString().split('T')[0],
 		meta_compare: '>=',

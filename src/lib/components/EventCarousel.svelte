@@ -22,7 +22,7 @@
 			class="max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
 		>
 			<Carousel.Content>
-				{#each eventState.events as event, i (i)}
+				{#each eventState.events as event (event.id)}
 					<Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
 						<div class="p-1">
 							<EventCard {event} />
