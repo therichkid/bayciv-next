@@ -21,6 +21,6 @@
 	<Navigation />
 </header>
 
-<div class="h-[200vh]">
+<div class="mx-auto h-[200vh] max-w-6xl px-12 py-6">
 	{@render children()}
 </div>
