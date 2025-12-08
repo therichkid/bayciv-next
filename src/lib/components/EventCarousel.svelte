@@ -1,16 +1,20 @@
 <script lang="ts">
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
-	import { fetchEvents, type WpEvent } from '$lib/event';
+	import { eventState, fetchEvents } from '$lib/event.svelte';
+	import { onMount } from 'svelte';
 	import EventCard from './EventCard.svelte';
 
-	let wpEvents: WpEvent[] = [];
-	fetchEvents().then((events) => {
-		wpEvents = events;
+	onMount(() => {
+		if (eventState.events.length === 0) {
+			fetchEvents();
+		}
 	});
 </script>
 
 <div class="my-6 flex w-full items-center justify-center">
-	{#if wpEvents.length}
+	{#if eventState.isLoading}
+		<p>Lade Events...</p>
+	{:else if eventState.events.length}
 		<Carousel.Root
 			opts={{
 				align: 'start',
@@ -18,10 +22,10 @@
 			class="w-full max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
 		>
 			<Carousel.Content>
-				{#each wpEvents as wpEvent, i (i)}
+				{#each eventState.events as event, i (i)}
 					<Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
 						<div class="p-1">
-							<EventCard {wpEvent} />
+							<EventCard wpEvent={event} />
 						</div>
 					</Carousel.Item>
 				{/each}

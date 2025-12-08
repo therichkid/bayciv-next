@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { Button } from '$lib/components/ui/button/index.js';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import { navigation, type NavigationItem } from '$lib/navigation.js';
+	import SunMoonIcon from '@lucide/svelte/icons/sun-moon';
+	import { toggleMode } from 'mode-watcher';
 	import BayCivIcon from './BayCivIcon.svelte';
 </script>
 
@@ -33,7 +36,7 @@
 	</li>
 {/snippet}
 
-<NavigationMenu.Root viewport={false} class="w-full px-6 py-4">
+<NavigationMenu.Root viewport={false} class="py-4 pl-6">
 	<NavigationMenu.List>
 		<NavigationMenu.Item>
 			<NavigationMenu.Link>
@@ -87,3 +90,9 @@
 		{/each}
 	</NavigationMenu.List>
 </NavigationMenu.Root>
+
+<div class="ml-auto py-4 pr-6">
+	<Button variant="ghost" size="icon" onclick={toggleMode}>
+		<SunMoonIcon size={18} />
+	</Button>
+</div>
