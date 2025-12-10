@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
 
 @import 'tw-animate-css';
 
@@ -118,4 +120,25 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+/* WordPress image classes */
+.alignleft {
+	float: left;
+	margin: 0 10px 0 0;
+	max-width: 100%;
+}
+.aligncenter {
+	display: block;
+	margin: 0 auto;
+	max-width: 100%;
+}
+.alignright {
+	float: right;
+	margin: 0 0 0 10px;
+	max-width: 100%;
+}
+.alignnone {
+	margin: 0;
+	max-width: 100%;
 }
