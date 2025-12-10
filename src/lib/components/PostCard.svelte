@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { WpPost } from '$lib/post.svelte';
 
-	export let post: WpPost;
+	let { post }: { post: WpPost } = $props();
 </script>
 
 <a href={resolve(`/news/${post.slug}`)}>

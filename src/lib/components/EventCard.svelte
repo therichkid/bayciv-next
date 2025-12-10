@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { WpEvent } from '$lib/event.svelte';
 
-	export let event: WpEvent;
+	let { event }: { event: WpEvent } = $props();
 </script>
 
 <Card.Root class="transition-shadow duration-300 hover:shadow-lg">

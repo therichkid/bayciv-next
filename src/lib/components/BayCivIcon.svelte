@@ -1,6 +1,5 @@
 <script lang="ts">
-	export let size = 24;
-	export let color = '#3a2e87';
+	let { size = 24, color = '#3a2e87' } = $props();
 </script>
 
 <svg
