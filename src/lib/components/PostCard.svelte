@@ -7,10 +7,11 @@
 </script>
 
 <a href={resolve(`/news/${post.slug}`)}>
-	<Card.Root class="p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
+	<Card.Root class="h-full p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
 		<div class="h-48 w-full overflow-hidden rounded-t-lg">
 			<img
-				src={post._embedded?.['wp:featuredmedia']?.[0].source_url}
+				src={post._embedded?.['wp:featuredmedia']?.[0].media_details?.sizes?.medium?.source_url ||
+					post._embedded?.['wp:featuredmedia']?.[0].source_url}
 				alt={post._embedded?.['wp:featuredmedia']?.[0].alt_text ||
 					post._embedded?.['wp:featuredmedia']?.[0].caption ||
 					post.title.rendered}
@@ -28,8 +29,8 @@
 			</Card.Description>
 		</Card.Content>
 
-		<Card.Footer class="p-4 pt-0">
-			<span class="text-sm font-medium text-primary"> Weiterlesen → </span>
+		<Card.Footer class="mt-auto p-4">
+			<span class="ml-auto text-sm font-medium text-primary"> Weiterlesen → </span>
 		</Card.Footer>
 	</Card.Root>
 </a>

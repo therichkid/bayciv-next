@@ -13,11 +13,30 @@ export interface WpPost {
 		rendered: string;
 	};
 	_embedded?: {
+		author: {
+			id: number;
+			name: string;
+			slug: string;
+		}[];
 		'wp:featuredmedia'?: {
 			source_url: string;
 			caption: string;
 			alt_text?: string;
+			media_details?: {
+				sizes?: {
+					thumbnail?: { source_url: string };
+					medium?: { source_url: string };
+					medium_large?: { source_url: string };
+					full?: { source_url: string };
+				};
+			};
 		}[];
+		'wp:term'?: {
+			id: number;
+			name: string;
+			slug: string;
+			taxonomy: 'category';
+		}[][];
 	};
 }
 

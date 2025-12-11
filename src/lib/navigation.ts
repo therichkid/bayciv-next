@@ -1,8 +1,4 @@
-import EarIcon from '@lucide/svelte/icons/ear';
-import InfoIcon from '@lucide/svelte/icons/info';
-import NewspaperIcon from '@lucide/svelte/icons/newspaper';
-import UserPlusIcon from '@lucide/svelte/icons/user-plus';
-import UsersIcon from '@lucide/svelte/icons/users';
+import { Ear, Info, Newspaper, UserPlus, Users } from '@lucide/svelte';
 import type { Component } from 'svelte';
 
 export interface NavigationItem {
@@ -18,12 +14,12 @@ export type Navigation = NavigationItem[];
 export const navigation: Navigation = [
 	{
 		title: 'Selbsthilfegruppen',
-		icon: UsersIcon,
+		icon: Users,
 		href: '/shgs',
 	},
 	{
 		title: 'Informationen',
-		icon: EarIcon,
+		icon: Ear,
 		children: [
 			{
 				title: 'Was ist ein CI?',
@@ -44,7 +40,7 @@ export const navigation: Navigation = [
 	},
 	{
 		title: 'Aktuelles',
-		icon: NewspaperIcon,
+		icon: Newspaper,
 		children: [
 			{
 				title: 'Veranstaltungen',
@@ -75,7 +71,7 @@ export const navigation: Navigation = [
 	},
 	{
 		title: 'Über uns',
-		icon: InfoIcon,
+		icon: Info,
 		children: [
 			{
 				title: 'Verband',
@@ -111,7 +107,7 @@ export const navigation: Navigation = [
 	},
 	{
 		title: 'Kontakt & Mitgliedschaft',
-		icon: UserPlusIcon,
+		icon: UserPlus,
 		children: [
 			{
 				title: 'Kontakt',

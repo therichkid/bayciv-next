@@ -4,7 +4,7 @@
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import { navigation, type NavigationItem } from '$lib/navigation.js';
-	import SunMoonIcon from '@lucide/svelte/icons/sun-moon';
+	import { SunMoon } from '@lucide/svelte';
 	import { toggleMode } from 'mode-watcher';
 	import BayCivIcon from './BayCivIcon.svelte';
 </script>
@@ -93,6 +93,6 @@
 
 <div class="ml-auto py-4 pr-6">
 	<Button variant="ghost" size="icon" onclick={toggleMode}>
-		<SunMoonIcon size={18} />
+		<SunMoon size={18} />
 	</Button>
 </div>

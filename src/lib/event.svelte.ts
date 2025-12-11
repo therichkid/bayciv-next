@@ -16,13 +16,45 @@ export interface WpEvent {
 		event_datum: string;
 		zeit_von: string;
 		zeit_bis: string;
+		adresse: {
+			address: string;
+			lat: { source: string; parsedValue: number };
+			lng: { source: string; parsedValue: number };
+			street_number: string;
+			street_name: string;
+			city: string;
+			state: string;
+			state_short: string;
+			post_code: string;
+			country: string;
+			country_short: string;
+		};
 	};
 	_embedded?: {
+		author: {
+			id: number;
+			name: string;
+			slug: string;
+		}[];
 		'wp:featuredmedia'?: {
 			source_url: string;
 			caption: string;
 			alt_text?: string;
+			media_details?: {
+				sizes?: {
+					thumbnail?: { source_url: string };
+					medium?: { source_url: string };
+					medium_large?: { source_url: string };
+					full?: { source_url: string };
+				};
+			};
 		}[];
+		'wp:term'?: {
+			id: number;
+			name: string;
+			slug: string;
+			taxonomy: 'category';
+		}[][];
 	};
 }
 

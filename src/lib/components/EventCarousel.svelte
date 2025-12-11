@@ -30,8 +30,8 @@
 					</Carousel.Item>
 				{/each}
 			</Carousel.Content>
-			<Carousel.Previous />
-			<Carousel.Next />
+			<Carousel.Previous class="cursor-pointer" />
+			<Carousel.Next class="cursor-pointer" />
 		</Carousel.Root>
 	{/if}
 </div>
