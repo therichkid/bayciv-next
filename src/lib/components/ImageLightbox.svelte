@@ -1,28 +1,37 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 
+	interface LightboxImage {
+		elem: HTMLImageElement;
+		index: number;
+		handler: ((event: MouseEvent) => void) | null;
+	}
+
 	let { html }: { html: HTMLDivElement | null } = $props();
 
-	let images: { elem: HTMLImageElement; index: number }[] = $state([]);
-	let imagesInitialized: boolean = $state(false);
-	let zoomedImage: { elem: HTMLImageElement; index: number } | null = $state(null);
+	let images: LightboxImage[] = [];
+	let zoomedImage: LightboxImage | null = $state(null);
 
 	const setupImageHandlers = () => {
-		if (imagesInitialized || !html) {
+		console.log('triggered');
+
+		if (!html) {
 			return;
 		}
 
-		images = Array.from(html.querySelectorAll('img')).map((elem, index) => ({ elem, index }));
+		images = Array.from(html.querySelectorAll('img')).map((elem, index) => ({ elem, index, handler: null }));
 
 		images.forEach((image) => {
-			image.elem.addEventListener('click', () => {
-				zoomedImage = image;
-			});
+			if (image.handler) {
+				return;
+			}
+
+			const handler = (_event: MouseEvent) => (zoomedImage = image);
+			image.elem.addEventListener('click', handler);
+			image.handler = handler;
 
 			image.elem.classList.add('rounded-sm', 'cursor-pointer', 'transition', 'duration-300', 'hover:scale-[1.02]');
 		});
-
-		imagesInitialized = true;
 	};
 
 	$effect(() => {
