@@ -27,7 +27,7 @@
 		</div>
 
 		<Card.Header>
-			<Card.Title class="line-clamp-2 text-lg font-semibold">{event.title.rendered}</Card.Title>
+			<Card.Title class="line-clamp-2 text-lg font-semibold">{@html event.title.rendered}</Card.Title>
 		</Card.Header>
 
 		<Card.Content>

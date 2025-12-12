@@ -21,7 +21,7 @@
 
 		<Card.Content class="px-4">
 			<Card.Title class="mb-2 line-clamp-2 text-lg font-semibold">
-				{post.title.rendered}
+				{@html post.title.rendered}
 			</Card.Title>
 
 			<Card.Description class="line-clamp-5 text-sm text-muted-foreground">

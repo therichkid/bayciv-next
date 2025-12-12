@@ -19,14 +19,12 @@
 			opts={{
 				align: 'start',
 			}}
-			class="max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
+			class="max-w-sm  md:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
 		>
 			<Carousel.Content>
 				{#each eventState.events as event (event.id)}
-					<Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-						<div class="p-1">
-							<EventCard {event} />
-						</div>
+					<Carousel.Item class="pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+						<EventCard {event} />
 					</Carousel.Item>
 				{/each}
 			</Carousel.Content>

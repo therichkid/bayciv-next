@@ -66,13 +66,11 @@ export const eventState = $state<{ events: WpEvent[]; isLoading: boolean }>({
 export const fetchEvents = async (): Promise<WpEvent[]> => {
 	eventState.isLoading = true;
 
-	const url = new SvelteURL('https://admin.bayciv.de/wp-json/wp/v2/events');
+	const url = new SvelteURL('https://admin.bayciv.de/wp-json/custom/v1/events');
 	const params = new SvelteURLSearchParams({
 		per_page: '10',
 		_embed: 'true',
-		meta_key: 'event_datum',
-		meta_value: new SvelteDate().toISOString().split('T')[0],
-		meta_compare: '>=',
+		from: new SvelteDate().toISOString().split('T')[0],
 	});
 	url.search = params.toString();
 
