@@ -1,0 +1,38 @@
+name: App Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build app
+        run: pnpm run build
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: build/
+          server-dir: /next.bayciv/
