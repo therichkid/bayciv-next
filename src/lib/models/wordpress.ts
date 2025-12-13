@@ -6,6 +6,40 @@ export type WP_REST_API_Events = WP_REST_API_Post[];
 export type WP_REST_API_SHG = WP_REST_API_Post;
 export type WP_REST_API_SHGs = WP_REST_API_Post[];
 
+export type WP_REST_API_Form = (
+	| {
+			type: 'text_block';
+			content: string;
+	  }
+	| {
+			type: 'field';
+			tag_type:
+				| 'text'
+				| 'number'
+				| 'textarea'
+				| 'date'
+				| 'email'
+				| 'tel'
+				| 'url'
+				| 'file'
+				| 'select'
+				| 'checkbox'
+				| 'radio'
+				| 'acceptance'
+				| 'quiz'
+				| 'submit';
+			name: string;
+			label: string;
+			required: boolean;
+			default_value?: string;
+			options?: (string | null)[];
+			multiple?: boolean;
+			min?: string;
+			max?: string;
+			markup_source: `[${string}]`;
+	  }
+)[];
+
 export interface WP_REST_API_Embedded {
 	author?: WP_REST_API_Embedded_Author[];
 	'wp:featuredmedia'?: WP_REST_API_Embedded_FeaturedMedia[];
