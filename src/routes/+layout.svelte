@@ -1,8 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
-	import BayCivBanner from '$lib/components/BayCivBanner.svelte';
+	import BayCivBanner from '$lib/components/images/BayCivBanner.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import { ModeWatcher } from 'mode-watcher';
 	import './layout.css';
 
 	let { children } = $props();
@@ -12,11 +11,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<ModeWatcher />
-
 <BayCivBanner />
 
-<header class="sticky top-0 z-50 flex w-full items-center justify-center bg-background">
+<header class="sticky top-0 z-50 flex w-full items-center bg-background">
 	<Navigation />
 </header>
 

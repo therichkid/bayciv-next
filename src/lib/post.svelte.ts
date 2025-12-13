@@ -1,48 +1,9 @@
 import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-
-export interface WpPost {
-	id: number;
-	slug: string;
-	title: {
-		rendered: string;
-	};
-	excerpt: {
-		rendered: string;
-	};
-	content: {
-		rendered: string;
-	};
-	_embedded?: {
-		author: {
-			id: number;
-			name: string;
-			slug: string;
-		}[];
-		'wp:featuredmedia'?: {
-			source_url: string;
-			caption: string;
-			alt_text?: string;
-			media_details?: {
-				sizes?: {
-					thumbnail?: { source_url: string };
-					medium?: { source_url: string };
-					medium_large?: { source_url: string };
-					full?: { source_url: string };
-				};
-			};
-		}[];
-		'wp:term'?: {
-			id: number;
-			name: string;
-			slug: string;
-			taxonomy: 'category';
-		}[][];
-	};
-}
+import type { WP_REST_API_Post, WP_REST_API_Posts } from 'wp-types';
 
 export const postState = $state<{
-	postsByPage: Record<number, WpPost[]>;
-	postsBySlug: Record<string, WpPost>;
+	postsByPage: Record<number, WP_REST_API_Posts>;
+	postsBySlug: Record<string, WP_REST_API_Post>;
 	isLoading: boolean;
 	totalPages: number;
 }>({
@@ -52,7 +13,7 @@ export const postState = $state<{
 	totalPages: 1,
 });
 
-export const getPosts = async (page: number = 1): Promise<WpPost[]> => {
+export const getPosts = async (page: number = 1): Promise<WP_REST_API_Posts> => {
 	if (postState.postsByPage[page]) {
 		return postState.postsByPage[page];
 	}
@@ -79,7 +40,7 @@ export const getPosts = async (page: number = 1): Promise<WpPost[]> => {
 	return posts;
 };
 
-export const getPost = async (slug: string): Promise<WpPost | null> => {
+export const getPost = async (slug: string): Promise<WP_REST_API_Post | null> => {
 	if (postState.postsBySlug[slug]) {
 		return postState.postsBySlug[slug];
 	}

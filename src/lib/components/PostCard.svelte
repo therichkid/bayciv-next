@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import type { WpPost } from '$lib/post.svelte';
+	import type { WP_REST_API_Embedded_FeaturedMedia } from '$lib/models/wordpress';
+	import type { WP_REST_API_Post } from 'wp-types';
 
-	let { post }: { post: WpPost } = $props();
+	let { post }: { post: WP_REST_API_Post } = $props();
+
+	const featuredMedia = $derived(
+		post._embedded?.['wp:featuredmedia']?.[0] as WP_REST_API_Embedded_FeaturedMedia | undefined,
+	);
 </script>
 
 <a href={resolve(`/news/${post.slug}`)}>
 	<Card.Root class="h-full p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
 		<div class="h-48 w-full overflow-hidden rounded-t-lg">
 			<img
-				src={post._embedded?.['wp:featuredmedia']?.[0].media_details?.sizes?.medium?.source_url ||
-					post._embedded?.['wp:featuredmedia']?.[0].source_url}
-				alt={post._embedded?.['wp:featuredmedia']?.[0].alt_text ||
-					post._embedded?.['wp:featuredmedia']?.[0].caption ||
-					post.title.rendered}
+				src={featuredMedia?.media_details?.sizes?.medium?.source_url || featuredMedia?.source_url}
+				alt={featuredMedia?.alt_text || featuredMedia?.caption.rendered || post.title.rendered}
 				class="h-full w-full object-cover"
 			/>
 		</div>

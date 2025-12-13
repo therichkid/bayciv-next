@@ -1,69 +1,13 @@
 import { SvelteDate, SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
+import type { WP_REST_API_Event_ACF } from './models/acf';
+import type { WP_REST_API_Event, WP_REST_API_Events } from './models/wordpress';
 
-export interface WpEvent {
-	id: number;
-	slug: string;
-	title: {
-		rendered: string;
-	};
-	excerpt: {
-		rendered: string;
-	};
-	content: {
-		rendered: string;
-	};
-	acf: {
-		event_datum: string;
-		zeit_von: string;
-		zeit_bis: string;
-		adresse: {
-			address: string;
-			lat: { source: string; parsedValue: number };
-			lng: { source: string; parsedValue: number };
-			street_number: string;
-			street_name: string;
-			city: string;
-			state: string;
-			state_short: string;
-			post_code: string;
-			country: string;
-			country_short: string;
-		};
-	};
-	_embedded?: {
-		author: {
-			id: number;
-			name: string;
-			slug: string;
-		}[];
-		'wp:featuredmedia'?: {
-			source_url: string;
-			caption: string;
-			alt_text?: string;
-			media_details?: {
-				sizes?: {
-					thumbnail?: { source_url: string };
-					medium?: { source_url: string };
-					medium_large?: { source_url: string };
-					full?: { source_url: string };
-				};
-			};
-		}[];
-		'wp:term'?: {
-			id: number;
-			name: string;
-			slug: string;
-			taxonomy: 'category';
-		}[][];
-	};
-}
-
-export const eventState = $state<{ events: WpEvent[]; isLoading: boolean }>({
+export const eventState = $state<{ events: WP_REST_API_Events; isLoading: boolean }>({
 	events: [],
 	isLoading: false,
 });
 
-export const fetchEvents = async (): Promise<WpEvent[]> => {
+export const fetchEvents = async (): Promise<WP_REST_API_Events> => {
 	eventState.isLoading = true;
 
 	const url = new SvelteURL('https://admin.bayciv.de/wp-json/custom/v1/events');
@@ -77,9 +21,9 @@ export const fetchEvents = async (): Promise<WpEvent[]> => {
 	const response = await fetch(url);
 	const data = await response.json();
 
-	const sortedEvents = data.sort((a: WpEvent, b: WpEvent) => {
-		const dateA = new SvelteDate(a.acf.event_datum).getTime();
-		const dateB = new SvelteDate(b.acf.event_datum).getTime();
+	const sortedEvents = data.sort((a: WP_REST_API_Event, b: WP_REST_API_Event) => {
+		const dateA = new SvelteDate((a.acf as WP_REST_API_Event_ACF).event_datum).getTime();
+		const dateB = new SvelteDate((b.acf as WP_REST_API_Event_ACF).event_datum).getTime();
 		return dateA - dateB;
 	});
 

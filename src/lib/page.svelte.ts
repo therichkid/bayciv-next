@@ -1,54 +1,15 @@
 import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-
-export interface WpPage {
-	id: number;
-	slug: string;
-	title: {
-		rendered: string;
-	};
-	excerpt: {
-		rendered: string;
-	};
-	content: {
-		rendered: string;
-	};
-	_embedded?: {
-		author: {
-			id: number;
-			name: string;
-			slug: string;
-		}[];
-		'wp:featuredmedia'?: {
-			source_url: string;
-			caption: string;
-			alt_text?: string;
-			media_details?: {
-				sizes?: {
-					thumbnail?: { source_url: string };
-					medium?: { source_url: string };
-					medium_large?: { source_url: string };
-					full?: { source_url: string };
-				};
-			};
-		}[];
-		'wp:term'?: {
-			id: number;
-			name: string;
-			slug: string;
-			taxonomy: 'category';
-		}[][];
-	};
-}
+import type { WP_REST_API_Page } from 'wp-types';
 
 export const pageState = $state<{
-	pagesBySlug: Record<string, WpPage>;
+	pagesBySlug: Record<string, WP_REST_API_Page>;
 	isLoading: boolean;
 }>({
 	pagesBySlug: {},
 	isLoading: false,
 });
 
-export const getPage = async (slug: string): Promise<WpPage | null> => {
+export const getPage = async (slug: string): Promise<WP_REST_API_Page | null> => {
 	if (pageState.pagesBySlug[slug]) {
 		return pageState.pagesBySlug[slug];
 	}
