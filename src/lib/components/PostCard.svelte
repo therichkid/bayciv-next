@@ -6,7 +6,7 @@
 
 	let { post }: { post: WP_REST_API_Post } = $props();
 
-	const featuredMedia = $derived(
+	let featuredMedia = $derived(
 		post._embedded?.['wp:featuredmedia']?.[0] as WP_REST_API_Embedded_FeaturedMedia | undefined,
 	);
 </script>

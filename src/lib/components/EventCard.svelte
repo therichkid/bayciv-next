@@ -7,8 +7,8 @@
 
 	let { event }: { event: WP_REST_API_Event } = $props();
 
-	const embedded = $derived(event._embedded as WP_REST_API_Embedded);
-	const acf = $derived(event.acf as WP_REST_API_Event_ACF);
+	let embedded = $derived(event._embedded as WP_REST_API_Embedded);
+	let acf = $derived(event.acf as WP_REST_API_Event_ACF);
 </script>
 
 <a href={resolve(`/events/${event.slug}`)}>

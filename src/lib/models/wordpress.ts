@@ -29,8 +29,9 @@ export type WP_REST_API_Form = (
 				| 'quiz'
 				| 'submit';
 			name: string;
-			label: string;
 			required: boolean;
+			label?: string;
+			placeholder?: string;
 			default_value?: string;
 			options?: (string | null)[];
 			multiple?: boolean;
