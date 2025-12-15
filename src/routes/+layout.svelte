@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import BayCivBanner from '$lib/components/images/BayCivBanner.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
+	import { Toaster } from '$lib/components/ui/sonner/index.js';
 	import './layout.css';
 
 	let { children } = $props();
@@ -10,6 +11,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+<Toaster />
 
 <BayCivBanner />
 

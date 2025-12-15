@@ -53,9 +53,13 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 				});
 				break;
 			case 'tel':
-				validation = z.e164({
-					message: `${elementName} muss eine gültige Telefonnummer sein.`,
-				});
+				validation = z
+					.string({
+						message: `${elementName} muss eine gültige Telefonnummer sein.`,
+					})
+					.min(5, {
+						message: `${elementName} muss eine gültige Telefonnummer mit mindestens 5 Ziffern sein.`,
+					});
 				break;
 			case 'url':
 				validation = z.url({
@@ -95,7 +99,7 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 		}
 
 		if (!element.required) {
-			validation = validation.optional();
+			validation = validation.optional().or(z.literal(''));
 		}
 
 		return schema.extend({
