@@ -9,12 +9,12 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-	import type { ZodIssue } from 'zod';
+	import type { $ZodIssue } from 'zod/v4/core';
 	import { Button } from './ui/button';
 
 	let { formId, pageId }: { formId: number; pageId?: number } = $props();
 
-	let formErrors = $state<Record<string, ZodIssue[]>>({});
+	let formErrors = $state<Record<string, $ZodIssue[]>>({});
 
 	let formData = $derived.by(() => {
 		const data: Record<string, any> = {};
@@ -28,7 +28,7 @@
 				return data;
 			}
 
-			data[element.name] = '';
+			data[element.name] = element.default_value ?? '';
 			return data;
 		}, data);
 		return data;
@@ -61,7 +61,7 @@
 					errorMap[formName].push(issue);
 					return errorMap;
 				},
-				{} as Record<string, ZodIssue[]>,
+				{} as Record<string, $ZodIssue[]>,
 			);
 
 			return;
@@ -104,12 +104,13 @@
 				<Button type="submit">{element.label}</Button>
 			{:else}
 				{#if element.label}
-					<Label>{element.label}</Label>
+					<Label id={element.name}>{element.label}</Label>
 				{/if}
 				{#if ['text', 'number', 'email', 'tel', 'url', 'file'].includes(element.type)}
 					<Input
 						type={element.type}
 						name={element.name}
+						id={element.name}
 						required={element.required}
 						bind:value={formData[element.name]}
 						oninput={() => {
@@ -122,10 +123,10 @@
 					<Textarea name={element.name} required={element.required} bind:value={formData[element.name]} />
 				{:else if element.type === 'select'}
 					<Select.Root
-						type="single"
+						type={element.multiple ? 'multiple' : 'single'}
 						name={element.name}
 						required={element.required}
-						bind:value={formData[element.name]}
+						value={formData[element.name]}
 						onValueChange={() => {
 							if (formErrors[element.name]) {
 								delete formErrors[element.name];
@@ -134,26 +135,27 @@
 					>
 						<Select.Trigger id={element.name} class="w-full">{element.label}</Select.Trigger>
 						<Select.Content>
-							{#each element.options?.filter(Boolean) ?? [] as opt, j (j)}
-								<Select.Item value={opt.value ?? ''}>{opt.label}</Select.Item>
+							{#each element.options ?? [] as option, j (j)}
+								<Select.Item value={option.value ?? ''} disabled={!option.value}>{option.label}</Select.Item>
 							{/each}
 						</Select.Content>
 					</Select.Root>
 				{:else if element.type === 'radio'}
 					<RadioGroup.Root
 						name={element.name}
+						id={element.name}
 						required={element.required}
-						bind:value={formData[element.name]}
+						value={formData[element.name]}
 						oninput={() => {
 							if (formErrors[element.name]) {
 								delete formErrors[element.name];
 							}
 						}}
 					>
-						{#each element.options?.filter(Boolean) ?? [] as opt, j (j)}
+						{#each element.options ?? [] as option, j (j)}
 							<div class="flex items-center gap-3">
-								<RadioGroup.Item id="{element.name}-{j}" value={opt.value ?? ''} />
-								<Label for="{element.name}-{j}">{opt.label}</Label>
+								<RadioGroup.Item id="{element.name}-{j}" value={option.value ?? ''} />
+								<Label for="{element.name}-{j}">{option.label}</Label>
 							</div>
 						{/each}
 					</RadioGroup.Root>
