@@ -6,6 +6,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { formState, getForm } from '$lib/form.svelte';
 	import { buildFormSchema } from '$lib/formSchema';
+	import type { WP_REST_API_Form_Field } from '$lib/models/wordpress';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
@@ -28,7 +29,11 @@
 				return data;
 			}
 
-			data[element.name] = element.default_value ?? '';
+			if (element.multiple) {
+				data[element.name] = element.default_value ? [element.default_value] : [];
+			} else {
+				data[element.name] = element.default_value ?? '';
+			}
 			return data;
 		}, data);
 		return data;
@@ -44,6 +49,25 @@
 
 		return url.toString();
 	});
+
+	const getSelectLabel = (element: WP_REST_API_Form_Field, value: string | string[]) => {
+		const getOptionLabel = (element: WP_REST_API_Form_Field, value: string) => {
+			const option = element.options?.find((opt) => opt.value === value);
+			return option ? option.label : undefined;
+		};
+
+		const matchingLabels = Array.isArray(value)
+			? value
+					.map((val) => getOptionLabel(element, val))
+					.filter((label) => label !== undefined)
+					.join(', ')
+			: getOptionLabel(element, value);
+
+		if (matchingLabels) {
+			return matchingLabels;
+		}
+		return element.label || '';
+	};
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
@@ -96,7 +120,7 @@
 {#if Object.keys(formData).length}
 	{@const elements = formState.formsById[formId]?.elements ?? []}
 
-	<form method="POST" action={actionUrl} onsubmit={handleSubmit} class="w-2/3 space-y-6">
+	<form method="POST" onsubmit={handleSubmit} class="w-2/3 space-y-6">
 		{#each elements as element, i (i)}
 			{#if element.type === 'text_block'}
 				<div>{@html element.raw_content}</div>
@@ -120,20 +144,34 @@
 						}}
 					/>
 				{:else if element.type === 'textarea'}
-					<Textarea name={element.name} required={element.required} bind:value={formData[element.name]} />
+					<Textarea
+						name={element.name}
+						id={element.name}
+						required={element.required}
+						bind:value={formData[element.name]}
+						oninput={() => {
+							if (formErrors[element.name]) {
+								delete formErrors[element.name];
+							}
+						}}
+					/>
 				{:else if element.type === 'select'}
 					<Select.Root
 						type={element.multiple ? 'multiple' : 'single'}
 						name={element.name}
 						required={element.required}
 						value={formData[element.name]}
-						onValueChange={() => {
+						onValueChange={(value: string | string[]) => {
+							formData = { ...formData, [element.name]: value };
+
 							if (formErrors[element.name]) {
 								delete formErrors[element.name];
 							}
 						}}
 					>
-						<Select.Trigger id={element.name} class="w-full">{element.label}</Select.Trigger>
+						<Select.Trigger id={element.name} class="w-full">
+							{getSelectLabel(element, formData[element.name])}
+						</Select.Trigger>
 						<Select.Content>
 							{#each element.options ?? [] as option, j (j)}
 								<Select.Item value={option.value ?? ''} disabled={!option.value}>{option.label}</Select.Item>
@@ -146,7 +184,9 @@
 						id={element.name}
 						required={element.required}
 						value={formData[element.name]}
-						oninput={() => {
+						onValueChange={(value: string) => {
+							formData = { ...formData, [element.name]: value };
+
 							if (formErrors[element.name]) {
 								delete formErrors[element.name];
 							}
