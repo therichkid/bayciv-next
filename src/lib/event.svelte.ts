@@ -7,14 +7,15 @@ export const eventState = $state<{ events: WP_REST_API_Events; isLoading: boolea
 	isLoading: false,
 });
 
-export const fetchEvents = async (): Promise<WP_REST_API_Events> => {
+export const fetchEvents = async (from?: SvelteDate, to?: SvelteDate): Promise<WP_REST_API_Events> => {
 	eventState.isLoading = true;
 
 	const url = new SvelteURL('https://admin.bayciv.de/wp-json/custom/v1/events');
 	const params = new SvelteURLSearchParams({
 		per_page: '10',
 		_embed: 'true',
-		from: new SvelteDate().toISOString().split('T')[0],
+		from: from ? from.toISOString().split('T')[0] : '',
+		to: to ? to.toISOString().split('T')[0] : '',
 	});
 	url.search = params.toString();
 

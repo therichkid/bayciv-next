@@ -13,7 +13,7 @@
 	let { formId, pageId }: { formId: number; pageId?: number } = $props();
 
 	let formData = $derived.by(() =>
-		(formState.formsById[formId] ?? [])
+		(formState.formsById[formId]?.elements ?? [])
 			.filter((field) => field.type === 'field')
 			.reduce(
 				(acc, field) => {
@@ -73,7 +73,7 @@
 </script>
 
 <form action={actionUrl} method="POST" enctype="multipart/form-data" onsubmit={handleSubmit} class="space-y-4">
-	{#each formState.formsById[formId] ?? [] as field, i (i)}
+	{#each formState.formsById[formId]?.elements ?? [] as field, i (i)}
 		{#if field.type === 'text_block'}
 			<div>{@html field.content}</div>
 		{:else if field.type === 'field'}

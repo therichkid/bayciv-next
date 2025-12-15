@@ -1,5 +1,5 @@
+import type { WP_REST_API_Form } from '$lib/models/wordpress';
 import { SvelteURL } from 'svelte/reactivity';
-import type { WP_REST_API_Form } from './models/wordpress';
 
 export const formState = $state<{
 	formsById: Record<string, WP_REST_API_Form>;
