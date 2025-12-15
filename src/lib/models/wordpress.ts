@@ -9,17 +9,24 @@ export type WP_REST_API_SHGs = WP_REST_API_Post[];
 export interface WP_REST_API_Form {
 	id: number;
 	title: string;
-	elements: (WP_REST_API_Form_Text_Block | WP_REST_API_Form_Field)[];
+	elements: WP_REST_API_Form_Element[];
 }
+
+export type WP_REST_API_Form_Element = WP_REST_API_Form_Text_Block | WP_REST_API_Form_Submit | WP_REST_API_Form_Field;
 
 export interface WP_REST_API_Form_Text_Block {
 	type: 'text_block';
-	content: string;
+	raw_content: string;
+}
+
+export interface WP_REST_API_Form_Submit {
+	type: 'submit';
+	label: string;
+	raw_content: string;
 }
 
 export interface WP_REST_API_Form_Field {
-	type: 'field';
-	tag_type:
+	type:
 		| 'text'
 		| 'number'
 		| 'textarea'
@@ -32,18 +39,16 @@ export interface WP_REST_API_Form_Field {
 		| 'checkbox'
 		| 'radio'
 		| 'acceptance'
-		| 'quiz'
-		| 'submit';
+		| 'quiz';
 	name: string;
 	required: boolean;
-	label?: string;
-	placeholder?: string;
-	default_value?: string;
-	options?: (string | null)[];
-	multiple?: boolean;
-	min?: string;
-	max?: string;
-	markup_source: `[${string}]`;
+	label: string | null;
+	options: { label: string; value: string | null }[];
+	multiple: boolean;
+	default_value: string | null;
+	min: number | null;
+	max: number | null;
+	raw_content: string;
 }
 
 export interface WP_REST_API_Embedded {
