@@ -71,31 +71,61 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 					message: `${elementName} muss eine gültige Datei sein.`,
 				});
 				break;
-			case 'select':
-			case 'checkbox': {
+			case 'select': {
 				const optionValues = (element.options ?? []).map((opt) => opt.value).filter((v): v is string => v !== null);
 				if (element.multiple) {
 					validation = z.array(
 						z.enum(optionValues, {
-							error: () => ({ message: `${elementName} enthält ungültige Auswahl.` }),
+							error: () => ({ message: `${elementName} enthält eine ungültige Auswahl.` }),
 						}),
 					);
 				} else {
 					validation = z.enum(optionValues, {
-						error: () => ({ message: `${elementName} enthält ungültige Auswahl.` }),
+						error: () => ({ message: `${elementName} enthält eine ungültige Auswahl.` }),
 					});
 				}
 				break;
 			}
+			case 'checkbox':
+			case 'acceptance':
+				validation = z.array(
+					z.boolean({
+						error: `${elementName} muss ein Wahrheitswert (true/false) sein.`,
+					}),
+				);
+
+				if (!element.multiple) {
+					validation = validation.refine((arr) => arr.filter(Boolean).length <= 1, {
+						message: `${elementName} darf höchstens einmal ausgewählt sein.`,
+					});
+				}
+				break;
 			case 'radio': {
 				const optionValues = (element.options ?? []).map((opt) => opt.value).filter((v): v is string => v !== null);
 				validation = z.enum(optionValues, {
-					error: () => ({ message: `${elementName} enthält ungültige Auswahl.` }),
+					error: () => ({ message: `${elementName} enthält eine ungültige Auswahl.` }),
 				});
 				break;
 			}
-			default:
-				throw new Error(`Unbekannter Elementtyp: ${element.type}`);
+			case 'quiz': {
+				const correctAnswers = (element.options ?? []).map((opt) => opt.value);
+				validation = z
+					.array(z.string(), {
+						error: `${elementName} muss ein Array von Antworten sein.`,
+					})
+					.length(correctAnswers.length, {
+						message: `${elementName} muss genau ${correctAnswers.length} Antworten enthalten.`,
+					})
+					.refine((answers) => answers.every((ans, i) => ans === correctAnswers[i]), {
+						message: `${elementName} enthält eine oder mehrere falsche Antworten.`,
+					});
+				break;
+			}
+		}
+
+		if (!validation) {
+			console.warn(`Unbekannter Elementtyp: ${element.type} für Element ${elementName}`);
+			return schema;
 		}
 
 		if (element.required) {

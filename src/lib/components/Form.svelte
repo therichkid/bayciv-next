@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import * as Field from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -29,8 +30,9 @@
 			if (element.type === 'text_block' || element.type === 'submit') {
 				return data;
 			}
-
-			if (element.multiple) {
+			if (element.type === 'checkbox') {
+				data[element.name] = new Array(element.options?.length || 0).fill(false);
+			} else if (element.multiple) {
 				data[element.name] = element.default_value ? [element.default_value] : [];
 			} else {
 				data[element.name] = element.default_value ?? '';
@@ -95,6 +97,8 @@
 		const formEl = event.target as HTMLFormElement;
 		const formBody = new FormData(formEl);
 
+		return;
+
 		try {
 			const response = await fetch(actionUrl, {
 				method: 'POST',
@@ -103,13 +107,14 @@
 			const data = await response.json();
 
 			if (data.status === 'mail_sent') {
-				toast.success('Kontaktformular erfolgreich gesendet.');
+				toast.success('Formular erfolgreich gesendet.');
 				formEl.reset();
 			} else {
-				toast.error('Fehler beim Senden des Kontaktformulars.');
+				toast.error(data.message || 'Fehler beim Senden des Formulars. Bitte versuchen Sie es später erneut.');
 			}
-		} catch {
-			toast.error('Netzwerkfehler beim Senden des Kontaktformulars.');
+		} catch (error) {
+			toast.error('Fehler beim Senden des Formulars. Bitte versuchen Sie es später erneut.');
+			console.error(error);
 		}
 	};
 
@@ -187,6 +192,30 @@
 								{/each}
 							</Select.Content>
 						</Select.Root>
+					{:else if element.type === 'checkbox' || element.type === 'acceptance'}
+						{#each element.options ?? [] as option, j (j)}
+							<div class="flex items-center gap-3">
+								<Checkbox
+									name={element.multiple ? `${element.name}[]` : element.name}
+									id={`${element.name}-${j}`}
+									required={element.required}
+									bind:checked={formData[element.name][j]}
+									onCheckedChange={(value: boolean) => {
+										formData = {
+											...formData,
+											[element.name]: formData[element.name].map((v: boolean, idx: number) =>
+												element.multiple ? (idx === j ? value : v) : idx === j ? value : false,
+											),
+										};
+
+										if (formErrors[element.name]) {
+											delete formErrors[element.name];
+										}
+									}}
+								/>
+								<Label for="toggle">{option.value}</Label>
+							</div>
+						{/each}
 					{:else if element.type === 'radio'}
 						<RadioGroup.Root
 							name={element.name}
