@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as Field from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as RadioGroup from '$lib/components/ui/radio-group/index.js';
@@ -127,88 +128,94 @@
 			{:else if element.type === 'submit'}
 				<Button type="submit">{element.label}</Button>
 			{:else}
-				{#if element.label}
-					<Label id={element.name}>{element.label}</Label>
-				{/if}
-				{#if ['text', 'number', 'email', 'tel', 'url', 'file'].includes(element.type)}
-					<Input
-						type={element.type}
-						name={element.name}
-						id={element.name}
-						required={element.required}
-						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
-						bind:value={formData[element.name]}
-						oninput={() => {
-							if (formErrors[element.name]) {
-								delete formErrors[element.name];
-							}
-						}}
-					/>
-				{:else if element.type === 'textarea'}
-					<Textarea
-						name={element.name}
-						id={element.name}
-						rows={5}
-						required={element.required}
-						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
-						bind:value={formData[element.name]}
-						oninput={() => {
-							if (formErrors[element.name]) {
-								delete formErrors[element.name];
-							}
-						}}
-					/>
-				{:else if element.type === 'select'}
-					<Select.Root
-						type={element.multiple ? 'multiple' : 'single'}
-						name={element.name}
-						required={element.required}
-						bind:value={formData[element.name]}
-						onValueChange={(value: string | string[]) => {
-							formData = { ...formData, [element.name]: value };
+				<Field.Field>
+					{#if element.label}
+						<Field.Label for={element.name}>{element.label}</Field.Label>
+					{/if}
+					{#if ['text', 'number', 'email', 'tel', 'url', 'file'].includes(element.type)}
+						<Input
+							type={element.type}
+							name={element.name}
+							id={element.name}
+							required={element.required}
+							aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+							bind:value={formData[element.name]}
+							oninput={() => {
+								if (formErrors[element.name]) {
+									delete formErrors[element.name];
+								}
+							}}
+						/>
+					{:else if element.type === 'textarea'}
+						<Textarea
+							name={element.name}
+							id={element.name}
+							rows={5}
+							required={element.required}
+							aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+							bind:value={formData[element.name]}
+							oninput={() => {
+								if (formErrors[element.name]) {
+									delete formErrors[element.name];
+								}
+							}}
+						/>
+					{:else if element.type === 'select'}
+						<Select.Root
+							type={element.multiple ? 'multiple' : 'single'}
+							name={element.name}
+							required={element.required}
+							bind:value={formData[element.name]}
+							onValueChange={(value: string | string[]) => {
+								formData = { ...formData, [element.name]: value };
 
-							if (formErrors[element.name]) {
-								delete formErrors[element.name];
-							}
-						}}
-					>
-						<Select.Trigger id={element.name} aria-invalid={formErrors[element.name] ? 'true' : 'false'} class="w-full">
-							{getSelectLabel(element, formData[element.name])}
-						</Select.Trigger>
-						<Select.Content>
+								if (formErrors[element.name]) {
+									delete formErrors[element.name];
+								}
+							}}
+						>
+							<Select.Trigger
+								id={element.name}
+								aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+								class="w-full"
+							>
+								{getSelectLabel(element, formData[element.name])}
+							</Select.Trigger>
+							<Select.Content>
+								{#each element.options ?? [] as option, j (j)}
+									<Select.Item value={option.value ?? ''} disabled={!option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					{:else if element.type === 'radio'}
+						<RadioGroup.Root
+							name={element.name}
+							id={element.name}
+							required={element.required}
+							aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+							bind:value={formData[element.name]}
+							onValueChange={(value: string) => {
+								formData = { ...formData, [element.name]: value };
+
+								if (formErrors[element.name]) {
+									delete formErrors[element.name];
+								}
+							}}
+						>
 							{#each element.options ?? [] as option, j (j)}
-								<Select.Item value={option.value ?? ''} disabled={!option.value}>{option.label}</Select.Item>
+								<div class="flex items-center gap-3">
+									<RadioGroup.Item id="{element.name}-{j}" value={option.value ?? ''} />
+									<Label for="{element.name}-{j}">{option.label}</Label>
+								</div>
 							{/each}
-						</Select.Content>
-					</Select.Root>
-				{:else if element.type === 'radio'}
-					<RadioGroup.Root
-						name={element.name}
-						id={element.name}
-						required={element.required}
-						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
-						bind:value={formData[element.name]}
-						onValueChange={(value: string) => {
-							formData = { ...formData, [element.name]: value };
-
-							if (formErrors[element.name]) {
-								delete formErrors[element.name];
-							}
-						}}
-					>
-						{#each element.options ?? [] as option, j (j)}
-							<div class="flex items-center gap-3">
-								<RadioGroup.Item id="{element.name}-{j}" value={option.value ?? ''} />
-								<Label for="{element.name}-{j}">{option.label}</Label>
-							</div>
+						</RadioGroup.Root>
+					{/if}
+					{#if formErrors[element.name]}
+						{#each formErrors[element.name] as issue, j (j)}
+							<Field.Error>{issue.message}</Field.Error>
 						{/each}
-					</RadioGroup.Root>
-				{/if}
-				{#if formErrors[element.name]}
-					{#each formErrors[element.name] as issue, j (j)}
-						<p class="my-1 text-sm text-red-600">{issue.message}</p>
-					{/each}
-				{/if}
+					{/if}
+				</Field.Field>
 			{/if}
 		{/each}
 	</form>
