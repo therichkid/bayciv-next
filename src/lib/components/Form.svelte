@@ -163,7 +163,7 @@
 					{:else if element.type === 'select'}
 						<Select.Root
 							type={element.multiple ? 'multiple' : 'single'}
-							name={element.name}
+							name={element.multiple ? `${element.name}[]` : element.name}
 							required={element.required}
 							bind:value={formData[element.name]}
 							onValueChange={(value: string | string[]) => {
