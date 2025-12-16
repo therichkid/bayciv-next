@@ -12,12 +12,18 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-	import type { $ZodIssue } from 'zod/v4/core';
+	import { z } from 'zod';
 	import { Button } from './ui/button';
 
 	let { formId, pageId }: { formId: number; pageId?: number } = $props();
 
-	let formData = $derived.by(() => getEmptyFormData());
+	let formData = $state<Record<string, any>>({});
+
+	$effect(() => {
+		if (formState.formsById[formId]) {
+			formData = getEmptyFormData();
+		}
+	});
 
 	const getEmptyFormData = () => {
 		return (formState.formsById[formId]?.elements || []).reduce(
@@ -40,24 +46,14 @@
 		);
 	};
 
-	let formErrors = $state<Record<string, $ZodIssue[]>>({});
+	let formErrors = $state<Record<string, { errors: string[] }>>({});
 
 	const validateForm = (): boolean => {
 		const schema = buildFormSchema(formState.formsById[formId]);
 		const validation = schema.safeParse(formData);
 
 		if (validation.success === false) {
-			formErrors = validation.error.issues.reduce(
-				(errorMap, issue) => {
-					const formName = issue.path[0] as string;
-					if (!errorMap[formName]) {
-						errorMap[formName] = [];
-					}
-					errorMap[formName].push(issue);
-					return errorMap;
-				},
-				{} as Record<string, $ZodIssue[]>,
-			);
+			formErrors = z.treeifyError(validation.error).properties as unknown as Record<string, { errors: string[] }>;
 			return false;
 		} else {
 			formErrors = {};
@@ -93,6 +89,11 @@
 		}
 		return element.label || '';
 	};
+
+	const hasSubmitButton = $derived.by(() => {
+		const elements = formState.formsById[formId]?.elements ?? [];
+		return elements.some((element) => element.type === 'submit');
+	});
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
@@ -135,7 +136,7 @@
 {#if Object.keys(formData).length}
 	{@const elements = formState.formsById[formId]?.elements ?? []}
 
-	<form method="POST" onsubmit={handleSubmit} novalidate class="max-w-2xl space-y-6">
+	<form method="POST" onsubmit={handleSubmit} novalidate class="max-w-xl space-y-6">
 		{#each elements as element, i (i)}
 			{#if element.type === 'text_block'}
 				<div>{@html element.raw_content}</div>
@@ -249,12 +250,16 @@
 						</RadioGroup.Root>
 					{/if}
 					{#if formErrors[element.name]}
-						{#each formErrors[element.name] as issue, j (j)}
-							<Field.Error>{issue.message}</Field.Error>
+						{#each formErrors[element.name].errors as error, j (j)}
+							<Field.Error>{error}</Field.Error>
 						{/each}
 					{/if}
 				</Field.Field>
 			{/if}
 		{/each}
+
+		{#if !hasSubmitButton}
+			<Button type="submit">Absenden</Button>
+		{/if}
 	</form>
 {/if}

@@ -7,7 +7,7 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 			return schema;
 		}
 
-		const elementName = element.label || element.name;
+		const elementName = element.label || element.name.charAt(0).toUpperCase() + element.name.slice(1);
 		let validation;
 
 		switch (element.type) {

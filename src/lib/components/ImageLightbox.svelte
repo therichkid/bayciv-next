@@ -13,8 +13,6 @@
 	let zoomedImage: LightboxImage | null = $state(null);
 
 	const setupImageHandlers = () => {
-		console.log('triggered');
-
 		if (!html) {
 			return;
 		}

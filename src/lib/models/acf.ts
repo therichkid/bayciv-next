@@ -1,3 +1,8 @@
+export interface WP_REST_API_Page_ACF {
+	abweichender_autor: string;
+	formular_id?: number;
+}
+
 export interface WP_REST_API_Post_ACF {
 	abweichender_autor: string;
 	bilder: number[] | '';
