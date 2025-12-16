@@ -17,30 +17,51 @@
 
 	let { formId, pageId }: { formId: number; pageId?: number } = $props();
 
+	let formData = $derived.by(() => getEmptyFormData());
+
+	const getEmptyFormData = () => {
+		return (formState.formsById[formId]?.elements || []).reduce(
+			(data, element) => {
+				if (element.type === 'text_block' || element.type === 'submit') {
+					return data;
+				}
+				if (element.type === 'checkbox' || element.type === 'acceptance') {
+					data[element.name] = new Array(element.options?.length || 0).fill(false);
+				} else if (element.multiple) {
+					data[element.name] = element.default_value ? [element.default_value] : [];
+				} else {
+					data[element.name] = element.default_value ?? '';
+				}
+				return data;
+			},
+			{} as Record<string, any>,
+		);
+	};
+
 	let formErrors = $state<Record<string, $ZodIssue[]>>({});
 
-	let formData = $derived.by(() => {
-		const data: Record<string, any> = {};
+	const validateForm = (): boolean => {
+		const schema = buildFormSchema(formState.formsById[formId]);
+		const validation = schema.safeParse(formData);
 
-		if (!formState.formsById[formId]) {
-			return data;
+		if (validation.success === false) {
+			formErrors = validation.error.issues.reduce(
+				(errorMap, issue) => {
+					const formName = issue.path[0] as string;
+					if (!errorMap[formName]) {
+						errorMap[formName] = [];
+					}
+					errorMap[formName].push(issue);
+					return errorMap;
+				},
+				{} as Record<string, $ZodIssue[]>,
+			);
+			return false;
+		} else {
+			formErrors = {};
+			return true;
 		}
-
-		formState.formsById[formId].elements.reduce((data, element) => {
-			if (element.type === 'text_block' || element.type === 'submit') {
-				return data;
-			}
-			if (element.type === 'checkbox') {
-				data[element.name] = new Array(element.options?.length || 0).fill(false);
-			} else if (element.multiple) {
-				data[element.name] = element.default_value ? [element.default_value] : [];
-			} else {
-				data[element.name] = element.default_value ?? '';
-			}
-			return data;
-		}, data);
-		return data;
-	});
+	};
 
 	let actionUrl = $derived.by(() => {
 		const url = new SvelteURL(`https://admin.bayciv.de/wp-json/contact-form-7/v1/contact-forms/${formId}/feedback`);
@@ -75,29 +96,13 @@
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 
-		const schema = buildFormSchema(formState.formsById[formId]);
-		const validation = schema.safeParse(formData);
-
-		if (validation.success === false) {
-			formErrors = validation.error.issues.reduce(
-				(errorMap, issue) => {
-					const formName = issue.path[0] as string;
-					if (!errorMap[formName]) {
-						errorMap[formName] = [];
-					}
-					errorMap[formName].push(issue);
-					return errorMap;
-				},
-				{} as Record<string, $ZodIssue[]>,
-			);
-
+		if (!validateForm()) {
+			toast.error('Bitte beheben Sie die Fehler im Formular.');
 			return;
 		}
 
 		const formEl = event.target as HTMLFormElement;
 		const formBody = new FormData(formEl);
-
-		return;
 
 		try {
 			const response = await fetch(actionUrl, {
@@ -108,7 +113,10 @@
 
 			if (data.status === 'mail_sent') {
 				toast.success('Formular erfolgreich gesendet.');
+
 				formEl.reset();
+				formData = getEmptyFormData();
+				formErrors = {};
 			} else {
 				toast.error(data.message || 'Fehler beim Senden des Formulars. Bitte versuchen Sie es später erneut.');
 			}
@@ -196,7 +204,7 @@
 						{#each element.options ?? [] as option, j (j)}
 							<div class="flex items-center gap-3">
 								<Checkbox
-									name={element.multiple ? `${element.name}[]` : element.name}
+									name={`${element.name}[]`}
 									id={`${element.name}-${j}`}
 									required={element.required}
 									bind:checked={formData[element.name][j]}
@@ -213,7 +221,7 @@
 										}
 									}}
 								/>
-								<Label for="toggle">{option.value}</Label>
+								<Label for={`${element.name}-${j}`}>{option.label}</Label>
 							</div>
 						{/each}
 					{:else if element.type === 'radio'}
