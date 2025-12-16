@@ -14,6 +14,7 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 			case 'text':
 			case 'textarea':
 			case 'tel':
+			case 'quiz':
 				validation = z.string({
 					error: `${elementName} muss ein Text sein.`,
 				});
@@ -54,21 +55,25 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 				}
 				break;
 			case 'date':
-				validation = z.date({
-					error: `${elementName} muss ein gültiges Datum sein.`,
-				});
+				validation = z
+					.string({
+						error: `${elementName} muss ein gültiges Datum sein.`,
+					})
+					.refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val) && !isNaN(Date.parse(val)), {
+						message: `${elementName} muss ein gültiges Datum im Format JJJJ-MM-TT sein.`,
+					});
 				if (element.min) {
-					validation = validation.min(new Date(element.min), {
+					validation = validation.refine((val) => new Date(val) >= new Date(element.min as string), {
 						message: `${elementName} muss nach dem ${element.min} liegen.`,
 					});
 				}
 				if (element.max) {
-					validation = validation.max(new Date(element.max), {
+					validation = validation.refine((val) => new Date(val) <= new Date(element.max as string), {
 						message: `${elementName} muss vor dem ${element.max} liegen.`,
 					});
 				}
-				if (element.required && !element.min) {
-					validation = validation.min(new Date('1900-01-01'), {
+				if (element.required) {
+					validation = validation.refine((val) => val && val.length > 0, {
 						message: `${elementName} ist ein Pflichtfeld und darf nicht leer sein.`,
 					});
 				}
@@ -146,20 +151,6 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 				validation = z.enum(optionValues, {
 					error: () => ({ message: `${elementName} enthält eine ungültige Auswahl.` }),
 				});
-				break;
-			}
-			case 'quiz': {
-				const correctAnswers = (element.options ?? []).map((opt) => opt.value);
-				validation = z
-					.array(z.string(), {
-						error: `${elementName} muss ein Array von Antworten sein.`,
-					})
-					.length(correctAnswers.length, {
-						message: `${elementName} muss genau ${correctAnswers.length} Antworten enthalten.`,
-					})
-					.refine((answers) => answers.every((ans, i) => ans === correctAnswers[i]), {
-						message: `${elementName} enthält eine oder mehrere falsche Antworten.`,
-					});
 				break;
 			}
 		}

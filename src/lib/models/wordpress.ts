@@ -46,8 +46,8 @@ export interface WP_REST_API_Form_Field {
 	options: { label: string; value: string | null }[];
 	multiple: boolean;
 	default_value: string | null;
-	min: number | null;
-	max: number | null;
+	min: number | string | null;
+	max: number | string | null;
 	raw_content: string;
 }
 

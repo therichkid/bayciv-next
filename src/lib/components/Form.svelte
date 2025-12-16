@@ -67,9 +67,8 @@
 
 	let actionUrl = $derived.by(() => {
 		const url = new SvelteURL(`https://admin.bayciv.de/wp-json/contact-form-7/v1/contact-forms/${formId}/feedback`);
-		const randomCount = Math.floor(Math.random() * 256);
 		const params = new SvelteURLSearchParams({
-			_wpcf7_unit_tag: `f${formId}-p${pageId || 0}-o${randomCount}`,
+			_wpcf7_unit_tag: `f${formId}-p${pageId ?? 1}-o1`,
 		});
 		url.search = params.toString();
 
@@ -147,7 +146,7 @@
 					{#if element.label}
 						<Field.Label for={element.name}>{element.label}</Field.Label>
 					{/if}
-					{#if ['text', 'number', 'email', 'tel', 'url', 'file'].includes(element.type)}
+					{#if ['text', 'number', 'date', 'email', 'tel', 'url', 'file', 'quiz'].includes(element.type)}
 						<Input
 							type={element.type}
 							name={element.name}
@@ -248,23 +247,6 @@
 								</div>
 							{/each}
 						</RadioGroup.Root>
-					{:else if element.type === 'quiz'}
-						{#each element.options ?? [] as option, j (j)}
-							<Label for={`${element.name}-${j}`}>{option.label}</Label>
-							<Input
-								type="text"
-								name={`${element.name}[]`}
-								id={`${element.name}-${j}`}
-								required={element.required}
-								aria-invalid={formErrors[element.name] ? 'true' : 'false'}
-								bind:value={formData[element.name][j]}
-								oninput={() => {
-									if (formErrors[element.name]) {
-										delete formErrors[element.name];
-									}
-								}}
-							/>
-						{/each}
 					{/if}
 					{#if formErrors[element.name]}
 						{#each formErrors[element.name] as issue, j (j)}
