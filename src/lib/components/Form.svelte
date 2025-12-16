@@ -27,6 +27,8 @@
 				}
 				if (element.type === 'checkbox' || element.type === 'acceptance') {
 					data[element.name] = new Array(element.options?.length || 0).fill(false);
+				} else if (element.type === 'quiz') {
+					data[element.name] = new Array(element.options?.length || 0).fill('');
 				} else if (element.multiple) {
 					data[element.name] = element.default_value ? [element.default_value] : [];
 				} else {
@@ -134,7 +136,7 @@
 {#if Object.keys(formData).length}
 	{@const elements = formState.formsById[formId]?.elements ?? []}
 
-	<form method="POST" onsubmit={handleSubmit} novalidate class="w-2/3 space-y-6">
+	<form method="POST" onsubmit={handleSubmit} novalidate class="max-w-2xl space-y-6">
 		{#each elements as element, i (i)}
 			{#if element.type === 'text_block'}
 				<div>{@html element.raw_content}</div>
@@ -246,6 +248,23 @@
 								</div>
 							{/each}
 						</RadioGroup.Root>
+					{:else if element.type === 'quiz'}
+						{#each element.options ?? [] as option, j (j)}
+							<Label for={`${element.name}-${j}`}>{option.label}</Label>
+							<Input
+								type="text"
+								name={`${element.name}[]`}
+								id={`${element.name}-${j}`}
+								required={element.required}
+								aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+								bind:value={formData[element.name][j]}
+								oninput={() => {
+									if (formErrors[element.name]) {
+										delete formErrors[element.name];
+									}
+								}}
+							/>
+						{/each}
 					{/if}
 					{#if formErrors[element.name]}
 						{#each formErrors[element.name] as issue, j (j)}
