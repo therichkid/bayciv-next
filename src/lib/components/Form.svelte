@@ -120,7 +120,7 @@
 {#if Object.keys(formData).length}
 	{@const elements = formState.formsById[formId]?.elements ?? []}
 
-	<form method="POST" onsubmit={handleSubmit} class="w-2/3 space-y-6">
+	<form method="POST" onsubmit={handleSubmit} novalidate class="w-2/3 space-y-6">
 		{#each elements as element, i (i)}
 			{#if element.type === 'text_block'}
 				<div>{@html element.raw_content}</div>
@@ -136,6 +136,7 @@
 						name={element.name}
 						id={element.name}
 						required={element.required}
+						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
 						bind:value={formData[element.name]}
 						oninput={() => {
 							if (formErrors[element.name]) {
@@ -147,7 +148,9 @@
 					<Textarea
 						name={element.name}
 						id={element.name}
+						rows={5}
 						required={element.required}
+						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
 						bind:value={formData[element.name]}
 						oninput={() => {
 							if (formErrors[element.name]) {
@@ -160,7 +163,7 @@
 						type={element.multiple ? 'multiple' : 'single'}
 						name={element.name}
 						required={element.required}
-						value={formData[element.name]}
+						bind:value={formData[element.name]}
 						onValueChange={(value: string | string[]) => {
 							formData = { ...formData, [element.name]: value };
 
@@ -169,7 +172,7 @@
 							}
 						}}
 					>
-						<Select.Trigger id={element.name} class="w-full">
+						<Select.Trigger id={element.name} aria-invalid={formErrors[element.name] ? 'true' : 'false'} class="w-full">
 							{getSelectLabel(element, formData[element.name])}
 						</Select.Trigger>
 						<Select.Content>
@@ -183,7 +186,8 @@
 						name={element.name}
 						id={element.name}
 						required={element.required}
-						value={formData[element.name]}
+						aria-invalid={formErrors[element.name] ? 'true' : 'false'}
+						bind:value={formData[element.name]}
 						onValueChange={(value: string) => {
 							formData = { ...formData, [element.name]: value };
 
@@ -202,7 +206,7 @@
 				{/if}
 				{#if formErrors[element.name]}
 					{#each formErrors[element.name] as issue, j (j)}
-						<p class="text-sm text-red-600">{issue.message}</p>
+						<p class="my-1 text-sm text-red-600">{issue.message}</p>
 					{/each}
 				{/if}
 			{/if}

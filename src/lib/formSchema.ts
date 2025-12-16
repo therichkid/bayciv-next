@@ -98,7 +98,14 @@ export const buildFormSchema = (form: WP_REST_API_Form) => {
 				throw new Error(`Unbekannter Elementtyp: ${element.type}`);
 		}
 
-		if (!element.required) {
+		if (element.required) {
+			const hasMin = validation.def.checks?.some((check) => check._zod.def.check === 'greater_than');
+			if (!hasMin && !(validation instanceof z.ZodEnum)) {
+				validation = validation.min(1, {
+					message: `${elementName} ist ein Pflichtfeld und darf nicht leer sein.`,
+				});
+			}
+		} else {
 			validation = validation.optional().or(z.literal(''));
 		}
 
