@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { MapLibre, Marker } from 'svelte-maplibre';
+	import BavariaGeoJson from '$lib/assets/bavaria.geo.json?raw';
+	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker } from 'svelte-maplibre';
 	import type { PageProps } from './$types';
 
 	const stockImages = import.meta.glob('$lib/assets/stock/thumbnail/*.webp', {
@@ -22,10 +23,21 @@
 <MapLibre
 	center={centerOfBavaria}
 	zoom={6.5}
-	standardControls
 	style="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
 	class="h-200"
 >
+	<GeoJSON id="bavaria-boundary" data={JSON.parse(BavariaGeoJson)}>
+		<LineLayer
+			layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+			paint={{ 'line-color': '#3a2e87', 'line-width': 2 }}
+		/>
+		<FillLayer
+			paint={{
+				'fill-color': '#3a2e87',
+				'fill-opacity': 0.05,
+			}}
+		/>
+	</GeoJSON>
 	{#each shgs as shg, i (shg.slug)}
 		{#if shg.acf.adresse}
 			<Marker lngLat={[shg.acf.adresse.lng, shg.acf.adresse.lat]} class="z-10 cursor-pointer hover:z-20">
