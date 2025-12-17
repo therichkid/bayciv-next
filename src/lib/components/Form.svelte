@@ -209,6 +209,7 @@
 									name={`${element.name}[]`}
 									id={`${element.name}-${j}`}
 									required={element.required}
+									aria-invalid={formErrors[element.name] ? 'true' : 'false'}
 									bind:checked={formData[element.name][j]}
 									onCheckedChange={(value: boolean) => {
 										formData = {

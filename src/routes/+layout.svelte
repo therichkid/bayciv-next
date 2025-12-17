@@ -10,6 +10,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>BayCIV</title>
 </svelte:head>
 
 <Toaster />
