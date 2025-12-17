@@ -1,15 +1,15 @@
 import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-import type { WP_REST_API_Page } from 'wp-types';
+import type { Custom_WP_REST_API_Page } from './models/wordpress';
 
 export const pageState = $state<{
-	pagesBySlug: Record<string, WP_REST_API_Page>;
+	pagesBySlug: Record<string, Custom_WP_REST_API_Page>;
 	isLoading: boolean;
 }>({
 	pagesBySlug: {},
 	isLoading: false,
 });
 
-export const getPage = async (slug: string): Promise<WP_REST_API_Page | null> => {
+export const getPage = async (slug: string): Promise<Custom_WP_REST_API_Page | null> => {
 	if (pageState.pagesBySlug[slug]) {
 		return pageState.pagesBySlug[slug];
 	}

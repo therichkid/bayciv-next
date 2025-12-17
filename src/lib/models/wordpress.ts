@@ -1,10 +1,29 @@
-import type { WP_REST_API_Post } from 'wp-types';
+import type { WP_REST_API_Page, WP_REST_API_Post } from 'wp-types';
+import type { WP_REST_API_Event_ACF, WP_REST_API_Page_ACF, WP_REST_API_Post_ACF, WP_REST_API_SHG_ACF } from './acf';
 
-export type WP_REST_API_Event = WP_REST_API_Post;
-export type WP_REST_API_Events = WP_REST_API_Post[];
+export type Custom_WP_REST_API_Page = WP_REST_API_Page & {
+	_embedded: WP_REST_API_Embedded;
+	acf: WP_REST_API_Page_ACF;
+};
+export type Custom_WP_REST_API_Pages = Custom_WP_REST_API_Page[];
 
-export type WP_REST_API_SHG = WP_REST_API_Post;
-export type WP_REST_API_SHGs = WP_REST_API_Post[];
+export type Custom_WP_REST_API_Post = WP_REST_API_Post & {
+	_embedded: WP_REST_API_Embedded;
+	acf: WP_REST_API_Post_ACF;
+};
+export type Custom_WP_REST_API_Posts = Custom_WP_REST_API_Post[];
+
+export type WP_REST_API_Event = WP_REST_API_Post & {
+	_embedded: WP_REST_API_Embedded;
+	acf: WP_REST_API_Event_ACF;
+};
+export type WP_REST_API_Events = WP_REST_API_Event[];
+
+export type WP_REST_API_SHG = WP_REST_API_Post & {
+	_embedded: WP_REST_API_Embedded;
+	acf: WP_REST_API_SHG_ACF;
+};
+export type WP_REST_API_SHGs = WP_REST_API_SHG[];
 
 export interface WP_REST_API_Form {
 	id: number;

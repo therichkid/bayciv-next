@@ -40,8 +40,8 @@ export interface WP_REST_API_Event_ACF {
 
 interface ACF_Address {
 	address: string;
-	lat: { source: string; parsedValue: number };
-	lng: { source: string; parsedValue: number };
+	lat: number;
+	lng: number;
 	street_number?: string;
 	street_name?: string;
 	city: string;

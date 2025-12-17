@@ -1,9 +1,9 @@
 import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
-import type { WP_REST_API_Post, WP_REST_API_Posts } from 'wp-types';
+import type { Custom_WP_REST_API_Post, Custom_WP_REST_API_Posts } from './models/wordpress';
 
 export const postState = $state<{
-	postsByPage: Record<number, WP_REST_API_Posts>;
-	postsBySlug: Record<string, WP_REST_API_Post>;
+	postsByPage: Record<number, Custom_WP_REST_API_Posts>;
+	postsBySlug: Record<string, Custom_WP_REST_API_Post>;
 	isLoading: boolean;
 	totalPages: number;
 }>({
@@ -13,7 +13,7 @@ export const postState = $state<{
 	totalPages: 1,
 });
 
-export const getPosts = async (page: number = 1): Promise<WP_REST_API_Posts> => {
+export const getPosts = async (page: number = 1): Promise<Custom_WP_REST_API_Posts> => {
 	if (postState.postsByPage[page]) {
 		return postState.postsByPage[page];
 	}
@@ -40,7 +40,7 @@ export const getPosts = async (page: number = 1): Promise<WP_REST_API_Posts> => 
 	return posts;
 };
 
-export const getPost = async (slug: string): Promise<WP_REST_API_Post | null> => {
+export const getPost = async (slug: string): Promise<Custom_WP_REST_API_Post | null> => {
 	if (postState.postsBySlug[slug]) {
 		return postState.postsBySlug[slug];
 	}
