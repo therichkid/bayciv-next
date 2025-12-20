@@ -12,15 +12,13 @@
 	<title>{post?.title.rendered ?? ''} - BayCIV</title>
 </svelte:head>
 
-<div class="max-w-3xl">
-	{#if data.post}
-		<h1 class="pt-12 pb-8 text-3xl font-semibold">{@html data.post.title.rendered}</h1>
-		{#key data.post.content.rendered}
-			<div class="prose-md prose max-w-3xl prose-a:text-primary prose-a:hover:underline" bind:this={articleContainer}>
-				{@html data.post.content.rendered}
-			</div>
-		{/key}
-	{/if}
-</div>
+{#if post}
+	<h1 class="pt-12 pb-8 text-3xl font-semibold">{@html post.title.rendered}</h1>
+	{#key post.content.rendered}
+		<div class="prose-md prose max-w-3xl prose-a:text-primary prose-a:hover:underline" bind:this={articleContainer}>
+			{@html post.content.rendered}
+		</div>
+	{/key}
+{/if}
 
 <ImageLightbox html={articleContainer} />

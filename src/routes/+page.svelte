@@ -7,8 +7,10 @@
 	<title>Home - BayCIV</title>
 </svelte:head>
 
-<h2 class="pt-12 pb-8 text-3xl font-semibold">Neuigkeiten</h2>
-<PostList />
+<div class="max-w-6xl">
+	<h2 class="pt-12 pb-8 text-3xl font-semibold">Neuigkeiten</h2>
+	<PostList />
 
-<h2 class="pt-12 pb-8 text-3xl font-semibold">Veranstaltungen</h2>
-<EventCarousel />
+	<h2 class="pt-12 pb-8 text-3xl font-semibold">Veranstaltungen</h2>
+	<EventCarousel />
+</div>
