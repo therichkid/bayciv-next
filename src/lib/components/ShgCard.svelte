@@ -4,8 +4,13 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
 	import { Baby, Globe, MapPin, Smile } from '@lucide/svelte';
+	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
-	let { shg }: { shg: WP_REST_API_SHG } = $props();
+	interface Props extends HTMLAnchorAttributes {
+		shg: WP_REST_API_SHG;
+	}
+
+	let { shg, ...restProps }: Props = $props();
 
 	let featuredMedia = $derived(shg._embedded?.['wp:featuredmedia']?.[0]);
 
@@ -26,8 +31,8 @@
 	});
 </script>
 
-<a href={resolve(`/shgs/${shg.slug}`)}>
-	<Card.Root class="h-full p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
+<a href={resolve(`/shgs/${shg.slug}`)} {...restProps}>
+	<Card.Root class="h-full max-h-64 p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
 		<Card.Content class="px-4 pt-3">
 			<Card.Title title={shg.title.rendered} class="text-md mb-3 line-clamp-2 font-semibold">
 				{@html shg.title.rendered}
