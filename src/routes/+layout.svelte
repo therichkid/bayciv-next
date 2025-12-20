@@ -21,6 +21,6 @@
 	<Navigation />
 </header>
 
-<div class="flex min-h-screen justify-center px-12 py-6">
+<div class="flex justify-center px-12 py-6">
 	{@render children()}
 </div>

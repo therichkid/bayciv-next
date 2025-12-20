@@ -30,9 +30,9 @@ export const fetchEvents = async (from?: SvelteDate, to?: SvelteDate, page = 1):
 	url.search = params.toString();
 
 	const response = await fetch(url);
-	const data = await response.json();
+	const events = await response.json();
 
-	const sortedEvents = data.sort((a: WP_REST_API_Event, b: WP_REST_API_Event) => {
+	const sortedEvents = events.sort((a: WP_REST_API_Event, b: WP_REST_API_Event) => {
 		const dateA = new SvelteDate((a.acf as WP_REST_API_Event_ACF).event_datum).getTime();
 		const dateB = new SvelteDate((b.acf as WP_REST_API_Event_ACF).event_datum).getTime();
 		return dateA - dateB;

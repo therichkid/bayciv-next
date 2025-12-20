@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import type { WP_REST_API_Embedded_FeaturedMedia } from '$lib/models/wordpress';
-	import type { WP_REST_API_Post } from 'wp-types';
+	import type { Custom_WP_REST_API_Post } from '$lib/models/wordpress';
 
-	let { post }: { post: WP_REST_API_Post } = $props();
+	let { post }: { post: Custom_WP_REST_API_Post } = $props();
 
-	let featuredMedia = $derived(
-		post._embedded?.['wp:featuredmedia']?.[0] as WP_REST_API_Embedded_FeaturedMedia | undefined,
-	);
+	let featuredMedia = $derived(post._embedded?.['wp:featuredmedia']?.[0]);
 </script>
 
 <a href={resolve(`/news/${post.slug}`)}>

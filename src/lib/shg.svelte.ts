@@ -29,10 +29,14 @@ export const getShgs = async (): Promise<WP_REST_API_SHGs> => {
 	const response = await fetch(url);
 	const shgs = await response.json();
 
-	shgState.shgs = shgs;
+	const sortedShgs = shgs.sort((a: WP_REST_API_SHG, b: WP_REST_API_SHG) => {
+		return a.title.rendered.localeCompare(b.title.rendered);
+	});
+
+	shgState.shgs = sortedShgs;
 	shgState.isLoading = false;
 
-	return shgs;
+	return sortedShgs;
 };
 
 export const getShg = async (slug: string): Promise<WP_REST_API_SHG | null> => {
