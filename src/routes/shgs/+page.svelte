@@ -3,16 +3,21 @@
 	import ShgCard from '$lib/components/ShgCard.svelte';
 	import TaxonomySelector from '$lib/components/TaxonomySelector.svelte';
 	import * as InputGroup from '$lib/components/ui/input-group/index.js';
+	import UserLocationButton from '$lib/components/UserLocationButton.svelte';
+	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
 	import { Eraser, Search } from '@lucide/svelte';
-	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker } from 'svelte-maplibre';
+	import { LngLat } from 'maplibre-gl';
+	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker, type Map } from 'svelte-maplibre';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let shgs = $derived(data.shgs);
 
+	let map: Map | undefined = $state(undefined);
+
 	let searchTerm = $state('');
 	let selectedTermIds = $state<number[]>([]);
-	let filteredShgs = $derived.by(() => {
+	let filteredShgs: (WP_REST_API_SHG & { distanceInMeters?: number })[] = $derived.by(() => {
 		let filtered = shgs;
 
 		if (searchTerm) {
@@ -26,12 +31,37 @@
 			});
 		}
 
+		if (userLocation) {
+			const from = new LngLat(userLocation[0], userLocation[1]);
+
+			filtered = filtered
+				.map((shg) => {
+					if (shg.acf.adresse && shg.acf.adresse.lat && shg.acf.adresse.lng) {
+						const to = new LngLat(shg.acf.adresse.lng, shg.acf.adresse.lat);
+						return { ...shg, distanceInMeters: from.distanceTo(to) };
+					}
+					return { ...shg, distanceInMeters: undefined };
+				})
+				.sort((a, b) => {
+					if (a.distanceInMeters === undefined && b.distanceInMeters === undefined) return 0;
+					if (a.distanceInMeters === undefined) return 1;
+					if (b.distanceInMeters === undefined) return -1;
+					return a.distanceInMeters - b.distanceInMeters;
+				});
+		}
+
 		return filtered;
 	});
 
 	let activeShg = $state<number | null>(null);
 
+	let userLocation: [number, number] | null = $state(null);
+
 	const centerOfBavaria: [number, number] = [11.431111, 48.7775];
+	const bavariaBounds: [[number, number], [number, number]] = [
+		[5, 44],
+		[18, 54],
+	];
 </script>
 
 <div class="flex w-full flex-col gap-6 lg:h-[calc(100vh-256px)] lg:flex-row">
@@ -58,7 +88,14 @@
 				{/if}
 			</InputGroup.Root>
 
-			<TaxonomySelector slug="gruppenmerkmal" bind:selectedTermIds />
+			<div class="flex items-center justify-between">
+				<TaxonomySelector slug="gruppenmerkmal" bind:selectedTermIds />
+
+				<UserLocationButton
+					bind:location={userLocation}
+					onLocationChange={(location) => map?.flyTo({ center: location, zoom: 10, essential: true })}
+				/>
+			</div>
 		</div>
 
 		<div
@@ -71,7 +108,9 @@
 	</div>
 
 	<MapLibre
+		bind:map
 		center={centerOfBavaria}
+		maxBounds={bavariaBounds}
 		zoom={6.5}
 		style="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
 		class="h-[calc(100vh-256px)] w-full rounded-lg lg:w-2/3"
@@ -88,6 +127,18 @@
 				}}
 			/>
 		</GeoJSON>
+
+		{#if userLocation}
+			<Marker lngLat={userLocation}>
+				<div class="pointer-events-none relative h-10 w-10 -translate-x-1/2 -translate-y-1/2">
+					<div class="absolute inset-0 animate-ping rounded-full bg-blue-600/25"></div>
+					<div
+						class="absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 ring-10 ring-blue-200/80"
+					></div>
+				</div>
+			</Marker>
+		{/if}
+
 		{#each filteredShgs as shg (shg.slug)}
 			{#if shg.acf.adresse}
 				<Marker

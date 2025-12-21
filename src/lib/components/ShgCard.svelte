@@ -7,11 +7,11 @@
 	import { getAddressString } from '$lib/utils/address';
 	import { decrypt } from '$lib/utils/crypt';
 	import { getRandomTailwindColor } from '$lib/utils/random';
-	import { Mail, MapPin, Phone } from '@lucide/svelte';
+	import { Mail, MapPin, Navigation, Phone } from '@lucide/svelte';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
 	interface Props extends HTMLAnchorAttributes {
-		shg: WP_REST_API_SHG;
+		shg: WP_REST_API_SHG & { distanceInMeters?: number };
 	}
 
 	let { shg, ...restProps }: Props = $props();
@@ -75,6 +75,12 @@
 					</div>
 
 					<div>
+						{#if shg.distanceInMeters}
+							<p class="my-3 flex items-center gap-2">
+								<Navigation size={22} class="shrink-0" />
+								<span>{Math.round(shg.distanceInMeters / 1000)} km entfernt</span>
+							</p>
+						{/if}
 						<p class="my-3 flex items-center gap-2">
 							<MapPin size={22} class="shrink-0" />
 							<span class="line-clamp-4">
