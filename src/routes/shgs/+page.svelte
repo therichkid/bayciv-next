@@ -159,7 +159,7 @@
 						</span>
 					</div>
 
-					<Popup offset={[0, -20]}>
+					<Popup offset={[0, -35]}>
 						<ShgCard {shg} class="max-w-150 animate-none" />
 					</Popup>
 				</Marker>
