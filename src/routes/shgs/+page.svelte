@@ -4,6 +4,7 @@
 	import TaxonomySelector from '$lib/components/TaxonomySelector.svelte';
 	import * as InputGroup from '$lib/components/ui/input-group/index.js';
 	import UserLocationButton from '$lib/components/UserLocationButton.svelte';
+	import UserLocationMarker from '$lib/components/UserLocationMarker.svelte';
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
 	import { Eraser, Search } from '@lucide/svelte';
 	import { LngLat } from 'maplibre-gl';
@@ -102,7 +103,16 @@
 			class="grid grow grid-cols-1 gap-6 overflow-x-hidden p-2 lg:overflow-y-auto xl:grid-cols-2 min-[128rem]:grid-cols-3"
 		>
 			{#each filteredShgs as shg (shg.id)}
-				<ShgCard {shg} onmouseenter={() => (activeShg = shg.id)} onmouseleave={() => (activeShg = null)} />
+				<ShgCard
+					{shg}
+					onclick={() => {
+						if (shg.acf.adresse && shg.acf.adresse.lng && shg.acf.adresse.lat) {
+							map?.flyTo({ center: [shg.acf.adresse.lng, shg.acf.adresse.lat], essential: true });
+						}
+					}}
+					onmouseenter={() => (activeShg = shg.id)}
+					onmouseleave={() => (activeShg = null)}
+				/>
 			{/each}
 		</div>
 	</div>
@@ -129,14 +139,7 @@
 		</GeoJSON>
 
 		{#if userLocation}
-			<Marker lngLat={userLocation}>
-				<div class="pointer-events-none relative h-10 w-10 -translate-x-1/2 -translate-y-1/2">
-					<div class="absolute inset-0 animate-ping rounded-full bg-blue-600/25"></div>
-					<div
-						class="absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 ring-10 ring-blue-200/80"
-					></div>
-				</div>
-			</Marker>
+			<UserLocationMarker {userLocation} />
 		{/if}
 
 		{#each filteredShgs as shg (shg.slug)}

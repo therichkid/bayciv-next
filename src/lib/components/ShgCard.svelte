@@ -8,9 +8,9 @@
 	import { decrypt } from '$lib/utils/crypt';
 	import { getRandomTailwindColor } from '$lib/utils/random';
 	import { Mail, MapPin, Navigation, Phone } from '@lucide/svelte';
-	import type { HTMLAnchorAttributes } from 'svelte/elements';
+	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAnchorAttributes {
+	interface Props extends HTMLAttributes<HTMLDivElement> {
 		shg: WP_REST_API_SHG & { distanceInMeters?: number };
 	}
 
@@ -36,76 +36,76 @@
 	});
 </script>
 
-<a href={resolve(`/shgs/${shg.slug}`)} {...restProps}>
-	<Card.Root class="h-full max-h-96 py-4 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
-		<Card.Header>
-			<Card.Title title={shg.title.rendered} class="text-md line-clamp-2 font-semibold">
-				{@html shg.title.rendered}
-			</Card.Title>
-		</Card.Header>
+<Card.Root class="h-full max-h-100 py-4 transition duration-300 hover:scale-[1.02] hover:shadow-lg" {...restProps}>
+	<Card.Header>
+		<Card.Title title={shg.title.rendered} class="text-md line-clamp-2 font-semibold">
+			{@html shg.title.rendered}
+		</Card.Title>
+	</Card.Header>
 
-		<Card.Content>
-			<div class="flex gap-4">
-				{#if featuredMedia}
-					<img
-						src={featuredMedia?.media_details?.sizes?.medium?.source_url || featuredMedia?.source_url}
-						alt={`Logo der Selbsthilfegruppe ${shg.title.rendered}`}
-						class="h-24 w-24 rounded-lg border {imageObjectFitClass}"
-					/>
-				{/if}
+	<Card.Content>
+		<div class="flex gap-4">
+			{#if featuredMedia}
+				<img
+					src={featuredMedia?.media_details?.sizes?.medium?.source_url || featuredMedia?.source_url}
+					alt={`Logo der Selbsthilfegruppe ${shg.title.rendered}`}
+					class="h-24 w-24 rounded-lg border {imageObjectFitClass}"
+				/>
+			{/if}
 
-				<Card.Description class="text-sm text-muted-foreground">
-					<div class="mb-4 flex w-full flex-wrap gap-2">
-						{#each termGroups as termGroup, i (i)}
-							{#each termGroup as term (term.id)}
-								{#if term.taxonomy === 'gruppenmerkmal'}
-									{@const color =
-										TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.color || getRandomTailwindColor(term.slug)}
-									{@const IconComponent = TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.icon}
+			<Card.Description class="text-sm text-muted-foreground">
+				<div class="mb-4 flex w-full flex-wrap gap-2">
+					{#each termGroups as termGroup, i (i)}
+						{#each termGroup as term (term.id)}
+							{#if term.taxonomy === 'gruppenmerkmal'}
+								{@const color =
+									TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.color || getRandomTailwindColor(term.slug)}
+								{@const IconComponent = TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.icon}
 
-									<Badge class="bg-{color}-100 py-1 text-{color}-950">
-										{#if IconComponent}
-											<IconComponent />
-										{/if}
-										{term.name}
-									</Badge>
-								{/if}
-							{/each}
+								<Badge class="bg-{color}-100 py-1 text-{color}-950">
+									{#if IconComponent}
+										<IconComponent />
+									{/if}
+									{term.name}
+								</Badge>
+							{/if}
 						{/each}
-					</div>
+					{/each}
+				</div>
 
-					<div>
-						{#if shg.distanceInMeters}
-							<p class="my-3 flex items-center gap-2">
-								<Navigation size={22} class="shrink-0" />
-								<span>{Math.round(shg.distanceInMeters / 1000)} km entfernt</span>
-							</p>
-						{/if}
+				<div>
+					{#if shg.distanceInMeters}
 						<p class="my-3 flex items-center gap-2">
-							<MapPin size={22} class="shrink-0" />
-							<span class="line-clamp-4">
-								{getAddressString(shg.acf.adresse, shg.acf.adressname)}
-							</span>
+							<Navigation size={22} class="shrink-0" />
+							<span>{Math.round(shg.distanceInMeters / 1000)} km entfernt</span>
 						</p>
-						{#if shg.acf.email}
-							<p class="my-3 flex items-center gap-2">
-								<Mail size={22} class="shrink-0" />
-								<span>{decrypt(shg.acf.email)}</span>
-							</p>
-						{/if}
-						{#if shg.acf.telefon}
-							<p class="my-3 flex items-center gap-2">
-								<Phone size={22} class="shrink-0" />
-								<span>{shg.acf.telefon}</span>
-							</p>
-						{/if}
-					</div>
-				</Card.Description>
-			</div>
-		</Card.Content>
+					{/if}
+					<p class="my-3 flex items-center gap-2">
+						<MapPin size={22} class="shrink-0" />
+						<span class="line-clamp-4">
+							{getAddressString(shg.acf.adresse, shg.acf.adressname)}
+						</span>
+					</p>
+					{#if shg.acf.email}
+						<p class="my-3 flex items-center gap-2">
+							<Mail size={22} class="shrink-0" />
+							<span>{decrypt(shg.acf.email)}</span>
+						</p>
+					{/if}
+					{#if shg.acf.telefon}
+						<p class="my-3 flex items-center gap-2">
+							<Phone size={22} class="shrink-0" />
+							<span>{shg.acf.telefon}</span>
+						</p>
+					{/if}
+				</div>
+			</Card.Description>
+		</div>
+	</Card.Content>
 
-		<Card.Footer class="mt-auto p-4">
+	<Card.Footer class="mt-auto p-4">
+		<a href={resolve(`/shgs/${shg.slug}`)}>
 			<span class="ml-auto text-sm font-medium text-primary"> Zur Gruppenseite → </span>
-		</Card.Footer>
-	</Card.Root>
-</a>
+		</a>
+	</Card.Footer>
+</Card.Root>
