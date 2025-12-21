@@ -2,7 +2,8 @@
 	import BavariaGeoJson from '$lib/assets/bavaria.geo.json?raw';
 	import ShgCard from '$lib/components/ShgCard.svelte';
 	import TaxonomySelector from '$lib/components/TaxonomySelector.svelte';
-	import { Input } from '$lib/components/ui/input';
+	import * as InputGroup from '$lib/components/ui/input-group/index.js';
+	import { Eraser, Search } from '@lucide/svelte';
 	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker } from 'svelte-maplibre';
 	import type { PageProps } from './$types';
 
@@ -38,13 +39,24 @@
 		<div class="mb-8 px-2">
 			<h1 class="my-6 text-lg font-semibold">{filteredShgs.length} Selbsthilfegruppen</h1>
 
-			<Input
-				type="text"
-				placeholder="Suche nach Selbsthilfegruppen..."
-				class="mb-4 py-6 text-lg"
-				autofocus
-				bind:value={searchTerm}
-			/>
+			<InputGroup.Root class="mb-4 py-6 text-lg">
+				<InputGroup.Input
+					type="text"
+					placeholder="Suche nach Selbsthilfegruppen..."
+					autofocus
+					bind:value={searchTerm}
+				/>
+				<InputGroup.Addon>
+					<Search />
+				</InputGroup.Addon>
+				{#if searchTerm}
+					<InputGroup.Addon align="inline-end">
+						<InputGroup.Button onclick={() => (searchTerm = '')}>
+							<Eraser />
+						</InputGroup.Button>
+					</InputGroup.Addon>
+				{/if}
+			</InputGroup.Root>
 
 			<TaxonomySelector slug="gruppenmerkmal" bind:selectedTermIds />
 		</div>
