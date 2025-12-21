@@ -10,7 +10,7 @@ export interface WP_REST_API_Post_ACF {
 
 export interface WP_REST_API_SHG_ACF {
 	adressname: string;
-	adresse: ACF_Address | null;
+	adresse: ACF_Address | false;
 	email: string;
 	instagram: string;
 	facebook: string;
@@ -38,12 +38,13 @@ export interface WP_REST_API_Event_ACF {
 	formular_id?: number;
 }
 
-interface ACF_Address {
+export interface ACF_Address {
 	address: string;
 	lat: number;
 	lng: number;
 	street_number?: string;
 	street_name?: string;
+	street_name_short?: string;
 	city: string;
 	state: string;
 	state_short: string;

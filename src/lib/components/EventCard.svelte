@@ -2,9 +2,15 @@
 	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { WP_REST_API_Event } from '$lib/models/wordpress';
+	import { getAddressString } from '$lib/utils/address';
 	import { Clock, MapPin, Users } from '@lucide/svelte';
+	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
-	let { event }: { event: WP_REST_API_Event } = $props();
+	interface Props extends HTMLAnchorAttributes {
+		event: WP_REST_API_Event;
+	}
+
+	let { event }: Props = $props();
 </script>
 
 <a href={resolve(`/events/${event.slug}`)}>
@@ -27,33 +33,29 @@
 		</div>
 
 		<Card.Header>
-			<Card.Title class="line-clamp-2 text-lg font-semibold">{@html event.title.rendered}</Card.Title>
+			<Card.Title title={event.title.rendered} class="line-clamp-2 text-lg font-semibold">
+				{@html event.title.rendered}
+			</Card.Title>
 		</Card.Header>
 
-		<Card.Content>
+		<Card.Content class="text-sm text-muted-foreground">
 			{#if event._embedded?.['wp:term']?.[0]?.[0]?.name}
-				<p class="my-2 flex items-center gap-2 text-sm text-muted-foreground">
-					<Users size={24} class="shrink-0" />
+				<p class="my-3 flex items-center gap-2">
+					<Users size={22} class="shrink-0" />
 					<span>{event._embedded['wp:term'][0][0].name ?? ''}</span>
 				</p>
 			{/if}
-			<p class="my-2 flex items-center gap-2 text-sm text-muted-foreground">
-				<Clock size={24} class="shrink-0" />
+			<p class="my-3 flex items-center gap-2">
+				<Clock size={22} class="shrink-0" />
 				<span>{event.acf.zeit_von}</span>
 				{#if event.acf.zeit_bis}
 					<span> - {event.acf.zeit_bis}</span>
 				{/if}
 			</p>
-			<p class="my-2 flex items-center gap-2 text-sm text-muted-foreground">
+			<p class="my-3 flex items-center gap-2">
 				<MapPin size={24} class="shrink-0" />
 				<span>
-					{#if event.acf.adresse}
-						{event.acf.adresse.street_name ?? ''}
-						{event.acf.adresse.street_number ?? ''}, {event.acf.adresse.post_code}
-						{event.acf.adresse.city}
-					{:else}
-						{event.acf.adressname}
-					{/if}
+					{getAddressString(event.acf.adresse, event.acf.adressname)}
 				</span>
 			</p>
 		</Card.Content>

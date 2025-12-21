@@ -22,6 +22,7 @@ export type WP_REST_API_Events = WP_REST_API_Event[];
 export type WP_REST_API_SHG = WP_REST_API_Post & {
 	_embedded: WP_REST_API_Embedded;
 	acf: WP_REST_API_SHG_ACF;
+	gruppenmerkmal: number[];
 };
 export type WP_REST_API_SHGs = WP_REST_API_SHG[];
 
@@ -105,5 +106,5 @@ export interface WP_REST_API_Embedded_Term {
 	id: number;
 	name: string;
 	slug: string;
-	taxonomy: 'category' | 'post_tag' | 'einrichtungstyp';
+	taxonomy: 'category' | 'post_tag' | 'gruppenmerkmal' | 'einrichtungstyp';
 }

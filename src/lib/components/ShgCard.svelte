@@ -2,8 +2,12 @@
 	import { resolve } from '$app/paths';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { TAXONOMY_DISPLAY_MAP } from '$lib/constants/taxonomy';
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
-	import { Baby, Globe, MapPin, Smile } from '@lucide/svelte';
+	import { getAddressString } from '$lib/utils/address';
+	import { decrypt } from '$lib/utils/crypt';
+	import { getRandomTailwindColor } from '$lib/utils/random';
+	import { Mail, MapPin, Phone } from '@lucide/svelte';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
 	interface Props extends HTMLAnchorAttributes {
@@ -13,6 +17,7 @@
 	let { shg, ...restProps }: Props = $props();
 
 	let featuredMedia = $derived(shg._embedded?.['wp:featuredmedia']?.[0]);
+	let termGroups = $derived(shg._embedded?.['wp:term'] || []);
 
 	let imageObjectFitClass = $derived.by(() => {
 		if (!featuredMedia?.media_details) {
@@ -32,12 +37,14 @@
 </script>
 
 <a href={resolve(`/shgs/${shg.slug}`)} {...restProps}>
-	<Card.Root class="h-full max-h-64 p-0 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
-		<Card.Content class="px-4 pt-3">
-			<Card.Title title={shg.title.rendered} class="text-md mb-3 line-clamp-2 font-semibold">
+	<Card.Root class="h-full max-h-96 py-4 transition duration-300 hover:scale-[1.02] hover:shadow-lg">
+		<Card.Header>
+			<Card.Title title={shg.title.rendered} class="text-md line-clamp-2 font-semibold">
 				{@html shg.title.rendered}
 			</Card.Title>
+		</Card.Header>
 
+		<Card.Content>
 			<div class="flex gap-4">
 				{#if featuredMedia}
 					<img
@@ -48,30 +55,43 @@
 				{/if}
 
 				<Card.Description class="text-sm text-muted-foreground">
-					<div class="mb-6 flex w-full flex-wrap gap-2">
-						{#if shg.acf.zielgruppe === 'Erwachsene'}
-							<Badge class="bg-blue-100 py-1 text-blue-950">
-								<Smile />
-								Für Erwachsene
-							</Badge>
+					<div class="mb-4 flex w-full flex-wrap gap-2">
+						{#each termGroups as termGroup, i (i)}
+							{#each termGroup as term (term.id)}
+								{#if term.taxonomy === 'gruppenmerkmal'}
+									{@const color =
+										TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.color || getRandomTailwindColor(term.slug)}
+									{@const IconComponent = TAXONOMY_DISPLAY_MAP['gruppenmerkmal']?.[term.slug]?.icon}
+
+									<Badge class="bg-{color}-100 py-1 text-{color}-950">
+										{#if IconComponent}
+											<IconComponent />
+										{/if}
+										{term.name}
+									</Badge>
+								{/if}
+							{/each}
+						{/each}
+					</div>
+
+					<div>
+						<p class="my-3 flex items-center gap-2">
+							<MapPin size={22} class="shrink-0" />
+							<span class="line-clamp-4">
+								{getAddressString(shg.acf.adresse, shg.acf.adressname)}
+							</span>
+						</p>
+						{#if shg.acf.email}
+							<p class="my-3 flex items-center gap-2">
+								<Mail size={22} class="shrink-0" />
+								<span>{decrypt(shg.acf.email)}</span>
+							</p>
 						{/if}
-						{#if shg.acf.zielgruppe === 'Kinder'}
-							<Badge class="bg-pink-100 py-1 text-pink-950">
-								<Baby />
-								Für Kinder
-							</Badge>
-						{/if}
-						{#if !shg.acf['online-gruppe']}
-							<Badge class="bg-green-100 py-1 text-green-950">
-								<MapPin />
-								Trifft sich vor Ort
-							</Badge>
-						{/if}
-						{#if shg.acf['online-gruppe']}
-							<Badge class="bg-cyan-100 py-1 text-cyan-950">
-								<Globe />
-								Trifft sich online
-							</Badge>
+						{#if shg.acf.telefon}
+							<p class="my-3 flex items-center gap-2">
+								<Phone size={22} class="shrink-0" />
+								<span>{shg.acf.telefon}</span>
+							</p>
 						{/if}
 					</div>
 				</Card.Description>

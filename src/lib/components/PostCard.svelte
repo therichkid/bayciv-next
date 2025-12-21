@@ -2,8 +2,13 @@
 	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { Custom_WP_REST_API_Post } from '$lib/models/wordpress';
+	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
-	let { post }: { post: Custom_WP_REST_API_Post } = $props();
+	interface Props extends HTMLAnchorAttributes {
+		post: Custom_WP_REST_API_Post;
+	}
+
+	let { post }: Props = $props();
 
 	let featuredMedia = $derived(post._embedded?.['wp:featuredmedia']?.[0]);
 </script>
@@ -19,7 +24,7 @@
 		</div>
 
 		<Card.Content class="px-4">
-			<Card.Title class="mb-2 line-clamp-2 text-lg font-semibold">
+			<Card.Title title={post.title.rendered} class="mb-2 line-clamp-2 text-lg font-semibold">
 				{@html post.title.rendered}
 			</Card.Title>
 
