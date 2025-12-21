@@ -36,7 +36,7 @@
 	});
 </script>
 
-<Card.Root class="h-full max-h-100 py-4 transition duration-300 hover:scale-[1.02] hover:shadow-lg" {...restProps}>
+<Card.Root class="h-full max-h-128 py-4 transition duration-300 hover:scale-[1.02] hover:shadow-lg" {...restProps}>
 	<Card.Header>
 		<Card.Title title={shg.title.rendered} class="text-md line-clamp-2 font-semibold">
 			{@html shg.title.rendered}
@@ -104,8 +104,8 @@
 	</Card.Content>
 
 	<Card.Footer class="mt-auto p-4">
-		<a href={resolve(`/shgs/${shg.slug}`)}>
-			<span class="ml-auto text-sm font-medium text-primary"> Zur Gruppenseite → </span>
+		<a href={resolve(`/shgs/${shg.slug}`)} class="ml-auto">
+			<span class="text-sm font-medium text-primary"> Zur Gruppenseite → </span>
 		</a>
 	</Card.Footer>
 </Card.Root>

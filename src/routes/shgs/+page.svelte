@@ -8,7 +8,7 @@
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
 	import { Eraser, Search } from '@lucide/svelte';
 	import { LngLat } from 'maplibre-gl';
-	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker, type Map } from 'svelte-maplibre';
+	import { FillLayer, GeoJSON, LineLayer, MapLibre, Marker, Popup, type Map } from 'svelte-maplibre';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -158,6 +158,10 @@
 							{@html shg.title.rendered}
 						</span>
 					</div>
+
+					<Popup offset={[0, -20]}>
+						<ShgCard {shg} class="max-w-150 animate-none" />
+					</Popup>
 				</Marker>
 			{/if}
 		{/each}
