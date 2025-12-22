@@ -9,7 +9,8 @@
 	let events = $state<WP_REST_API_Event[]>([]);
 
 	onMount(async () => {
-		events = await getEvents(new SvelteDate());
+		const response = await getEvents(new SvelteDate());
+		events = response.events;
 	});
 </script>
 

@@ -2,16 +2,16 @@ import type { WP_REST_API_Form } from '$lib/models/wordpress';
 import { SvelteURL } from 'svelte/reactivity';
 
 export const formState = $state<{
-	formsById: Record<string, WP_REST_API_Form>;
+	byId: Record<string, WP_REST_API_Form>;
 	isLoading: boolean;
 }>({
-	formsById: {},
+	byId: {},
 	isLoading: false,
 });
 
 export const getForm = async (id: number): Promise<WP_REST_API_Form | null> => {
-	if (formState.formsById[id]) {
-		return formState.formsById[id];
+	if (formState.byId[id]) {
+		return formState.byId[id];
 	}
 
 	formState.isLoading = true;
@@ -22,7 +22,7 @@ export const getForm = async (id: number): Promise<WP_REST_API_Form | null> => {
 	const data = await response.json();
 
 	if (data) {
-		formState.formsById[id] = data;
+		formState.byId[id] = data;
 	}
 	formState.isLoading = false;
 

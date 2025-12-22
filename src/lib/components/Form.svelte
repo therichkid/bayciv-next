@@ -20,13 +20,13 @@
 	let formData = $state<Record<string, any>>({});
 
 	$effect(() => {
-		if (formState.formsById[formId]) {
+		if (formState.byId[formId]) {
 			formData = getEmptyFormData();
 		}
 	});
 
 	const getEmptyFormData = () => {
-		return (formState.formsById[formId]?.elements || []).reduce(
+		return (formState.byId[formId]?.elements || []).reduce(
 			(data, element) => {
 				if (element.type === 'text_block' || element.type === 'submit') {
 					return data;
@@ -49,7 +49,7 @@
 	let formErrors = $state<Record<string, { errors: string[] }>>({});
 
 	const validateForm = (): boolean => {
-		const schema = buildFormSchema(formState.formsById[formId]);
+		const schema = buildFormSchema(formState.byId[formId]);
 		const validation = schema.safeParse(formData);
 
 		if (validation.success === false) {
@@ -91,7 +91,7 @@
 	};
 
 	const hasSubmitButton = $derived.by(() => {
-		const elements = formState.formsById[formId]?.elements ?? [];
+		const elements = formState.byId[formId]?.elements ?? [];
 		return elements.some((element) => element.type === 'submit');
 	});
 
@@ -134,7 +134,7 @@
 </script>
 
 {#if Object.keys(formData).length}
-	{@const elements = formState.formsById[formId]?.elements ?? []}
+	{@const elements = formState.byId[formId]?.elements ?? []}
 
 	<form method="POST" onsubmit={handleSubmit} novalidate class="max-w-xl space-y-6">
 		{#each elements as element, i (i)}

@@ -2,16 +2,16 @@ import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
 import type { Custom_WP_REST_API_Page } from './models/wordpress';
 
 export const pageState = $state<{
-	pagesBySlug: Record<string, Custom_WP_REST_API_Page>;
+	bySlug: Record<string, Custom_WP_REST_API_Page>;
 	isLoading: boolean;
 }>({
-	pagesBySlug: {},
+	bySlug: {},
 	isLoading: false,
 });
 
 export const getPage = async (slug: string): Promise<Custom_WP_REST_API_Page | null> => {
-	if (pageState.pagesBySlug[slug]) {
-		return pageState.pagesBySlug[slug];
+	if (pageState.bySlug[slug]) {
+		return pageState.bySlug[slug];
 	}
 
 	pageState.isLoading = true;
@@ -28,7 +28,7 @@ export const getPage = async (slug: string): Promise<Custom_WP_REST_API_Page | n
 	const page = data[0] || null;
 
 	if (page) {
-		pageState.pagesBySlug[slug] = page;
+		pageState.bySlug[slug] = page;
 	}
 	pageState.isLoading = false;
 

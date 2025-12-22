@@ -1,13 +1,15 @@
 import { SvelteURL, SvelteURLSearchParams } from 'svelte/reactivity';
 import type { WP_REST_API_SHG, WP_REST_API_SHGs } from './models/wordpress';
 
+const PER_PAGE = 100;
+
 export const shgState = $state<{
 	shgs: WP_REST_API_SHGs;
-	shgsBySlug: Record<string, WP_REST_API_SHG>;
+	bySlug: Record<string, WP_REST_API_SHG>;
 	isLoading: boolean;
 }>({
 	shgs: [],
-	shgsBySlug: {},
+	bySlug: {},
 	isLoading: false,
 });
 
@@ -20,8 +22,7 @@ export const getShgs = async (): Promise<WP_REST_API_SHGs> => {
 
 	const url = new SvelteURL('https://admin.bayciv.de/wp-json/wp/v2/shgs');
 	const params = new SvelteURLSearchParams({
-		// TODO: pagination
-		per_page: '100',
+		per_page: PER_PAGE.toString(),
 		_embed: 'true',
 	});
 	url.search = params.toString();
@@ -40,13 +41,13 @@ export const getShgs = async (): Promise<WP_REST_API_SHGs> => {
 };
 
 export const getShg = async (slug: string): Promise<WP_REST_API_SHG | null> => {
-	if (shgState.shgsBySlug[slug]) {
-		return shgState.shgsBySlug[slug];
+	if (shgState.bySlug[slug]) {
+		return shgState.bySlug[slug];
 	}
 
 	const found = shgState.shgs.find((shg) => shg.slug === slug);
 	if (found) {
-		shgState.shgsBySlug[slug] = found;
+		shgState.bySlug[slug] = found;
 		return found;
 	}
 
@@ -64,7 +65,7 @@ export const getShg = async (slug: string): Promise<WP_REST_API_SHG | null> => {
 	const shg = data[0] || null;
 
 	if (shg) {
-		shgState.shgsBySlug[slug] = shg;
+		shgState.bySlug[slug] = shg;
 	}
 	shgState.isLoading = false;
 
