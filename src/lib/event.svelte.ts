@@ -12,7 +12,7 @@ export const eventState = $state<{
 	isLoading: false,
 });
 
-export const fetchEvents = async (from?: SvelteDate, to?: SvelteDate, page = 1): Promise<WP_REST_API_Events> => {
+export const getEvents = async (from?: SvelteDate, to?: SvelteDate, page = 1): Promise<WP_REST_API_Events> => {
 	if (eventState.eventsByDate.has(eventKey(from, to, page))) {
 		return eventState.eventsByDate.get(eventKey(from, to, page))!;
 	}
