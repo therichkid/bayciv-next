@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params }) => {
 
 	const events: WP_REST_API_Event[] = [];
 	let page = 1;
-	let totalPages: number | undefined = undefined;
+	let totalPages: number;
 
 	do {
 		const response = await getEvents(new SvelteDate(from), new SvelteDate(to), page++);
