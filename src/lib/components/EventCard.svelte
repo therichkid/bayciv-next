@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Card from '$lib/components/ui/card';
 	import type { WP_REST_API_Event } from '$lib/models/wordpress';
 	import { getAddressString } from '$lib/utils/address';
 	import { Clock, MapPin, Users } from '@lucide/svelte';

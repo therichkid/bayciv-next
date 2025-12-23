@@ -3,7 +3,7 @@ import type { Component } from 'svelte';
 
 export interface NavigationItem {
 	title: string;
-	href?: string;
+	href?: `/${string}`;
 	description?: string;
 	icon?: Component;
 	children?: NavigationItem[];

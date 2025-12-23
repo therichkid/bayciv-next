@@ -2,7 +2,7 @@
 	import BavariaGeoJson from '$lib/assets/bavaria.geo.json?raw';
 	import ShgCard from '$lib/components/ShgCard.svelte';
 	import TaxonomySelector from '$lib/components/TaxonomySelector.svelte';
-	import * as InputGroup from '$lib/components/ui/input-group/index.js';
+	import * as InputGroup from '$lib/components/ui/input-group';
 	import UserLocationButton from '$lib/components/UserLocationButton.svelte';
 	import UserLocationMarker from '$lib/components/UserLocationMarker.svelte';
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';

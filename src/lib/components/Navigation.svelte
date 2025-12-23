@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import BayCivIcon from '$lib/components/images/BayCivIcon.svelte';
-	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
+	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import { navigation, type NavigationItem } from '$lib/navigation.js';
 </script>
@@ -20,7 +20,7 @@
 		<NavigationMenu.Link>
 			{#snippet child()}
 				<a
-					href={resolve(href)}
+					href={resolve(href!)}
 					class="block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
 				>
 					<div class="text-sm leading-none font-medium">{title}</div>
@@ -57,9 +57,7 @@
 						})}
 					</NavigationMenu.Trigger>
 					<NavigationMenu.Content>
-						<ul
-							class="grid w-[400px] gap-2 p-2 {item.children.length > 3 && 'md:w-[500px] md:grid-cols-2 lg:w-[600px]'}"
-						>
+						<ul class="grid w-100 gap-2 p-2 {item.children.length > 3 && 'md:w-125 md:grid-cols-2 lg:w-150'}">
 							{#each item.children as child, j (j)}
 								<li>
 									{@render ListItem({
@@ -74,7 +72,7 @@
 				{:else if item.href}
 					<NavigationMenu.Link>
 						{#snippet child()}
-							<a href={resolve(item.href)} class={navigationMenuTriggerStyle()}>
+							<a href={resolve(item.href!)} class={navigationMenuTriggerStyle()}>
 								{@render MainNavigationItem({
 									title: item.title,
 									icon: item.icon,

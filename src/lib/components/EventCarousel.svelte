@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Carousel from '$lib/components/ui/carousel/index.js';
+	import * as Carousel from '$lib/components/ui/carousel';
 	import { eventState, getEvents } from '$lib/event.svelte';
 	import type { WP_REST_API_Event } from '$lib/models/wordpress';
 	import { onMount } from 'svelte';

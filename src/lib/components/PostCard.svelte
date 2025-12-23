@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Card from '$lib/components/ui/card';
 	import type { Custom_WP_REST_API_Post } from '$lib/models/wordpress';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 

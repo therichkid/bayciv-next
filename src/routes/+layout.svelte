@@ -2,7 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import BayCivBanner from '$lib/components/images/BayCivBanner.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import { Toaster } from '$lib/components/ui/sonner/index.js';
+	import { Toaster } from '$lib/components/ui/sonner';
 	import './layout.css';
 
 	let { children } = $props();

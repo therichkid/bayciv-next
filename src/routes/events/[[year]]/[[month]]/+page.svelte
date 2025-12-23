@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { Calendar } from '$lib/components/ui/calendar';
 	import CalendarDay from '$lib/components/ui/calendar/calendar-day.svelte';
-	import { Calendar } from '$lib/components/ui/calendar/index.js';
 	import { getEvents } from '$lib/event.svelte';
 	import type { WP_REST_API_Event, WP_REST_API_Events } from '$lib/models/wordpress';
 	import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date';
@@ -44,14 +44,22 @@
 	let placeholder = $derived(new CalendarDate(data.from.year, data.from.month, 1));
 
 	$effect(() => {
-		const { year, month } = placeholder;
-		const next = `/events/${year}/${String(month).padStart(2, '0')}`;
+		placeholder = new CalendarDate(data.from.year, data.from.month, 1);
+	});
 
-		if (window.location.pathname === resolve(next)) {
+	$effect(() => {
+		const { year, month } = placeholder;
+
+		const href = resolve('/events/[[year]]/[[month]]', {
+			year: String(year),
+			month: String(month).padStart(2, '0'),
+		});
+
+		if (window.location.pathname === href) {
 			return;
 		}
 
-		goto(resolve(next), { replaceState: true, keepFocus: true, noScroll: true });
+		goto(href, { replaceState: true, keepFocus: true, noScroll: true });
 	});
 </script>
 

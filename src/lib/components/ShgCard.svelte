@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { Badge } from '$lib/components/ui/badge/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
+	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '$lib/components/ui/card';
 	import { TAXONOMY_DISPLAY_MAP } from '$lib/constants/taxonomy';
 	import type { WP_REST_API_SHG } from '$lib/models/wordpress';
 	import { getAddressString } from '$lib/utils/address';
