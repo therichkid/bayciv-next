@@ -17,7 +17,7 @@
 <div class="my-6 w-full">
 	{#if eventState.isLoading}
 		<p>Lade Events...</p>
-	{:else if events.length}
+	{:else if events.length > 0}
 		<Carousel.Root
 			opts={{
 				align: 'start',

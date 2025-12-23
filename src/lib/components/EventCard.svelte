@@ -3,6 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import type { WP_REST_API_Event } from '$lib/models/wordpress';
 	import { getAddressString } from '$lib/utils/address';
+	import { getGroupNames } from '$lib/utils/shg';
 	import { Clock, MapPin, Users } from '@lucide/svelte';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
@@ -39,10 +40,11 @@
 		</Card.Header>
 
 		<Card.Content class="text-sm text-muted-foreground">
-			{#if event._embedded?.['wp:term']?.[0]?.[0]?.name}
+			{@const groupNames = getGroupNames(event._embedded?.['wp:term'])}
+			{#if groupNames.length > 0}
 				<p class="my-3 flex items-center gap-2">
 					<Users size={22} class="shrink-0" />
-					<span>{event._embedded['wp:term'][0][0].name ?? ''}</span>
+					<span>{groupNames.join(', ')}</span>
 				</p>
 			{/if}
 			<p class="my-3 flex items-center gap-2">

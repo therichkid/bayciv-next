@@ -133,7 +133,7 @@
 	});
 </script>
 
-{#if Object.keys(formData).length}
+{#if Object.keys(formData).length > 0}
 	{@const elements = formState.byId[formId]?.elements ?? []}
 
 	<form method="POST" onsubmit={handleSubmit} novalidate class="max-w-xl space-y-6">

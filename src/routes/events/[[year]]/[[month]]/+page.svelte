@@ -5,6 +5,7 @@
 	import CalendarDay from '$lib/components/ui/calendar/calendar-day.svelte';
 	import { getEvents } from '$lib/event.svelte';
 	import type { WP_REST_API_Event, WP_REST_API_Events } from '$lib/models/wordpress';
+	import { getGroupNames } from '$lib/utils/shg';
 	import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
@@ -40,7 +41,9 @@
 				if (!map.has(date)) {
 					map.set(date, []);
 				}
-				map.get(date)?.push(event);
+				if (!map.get(date)?.some(({ id }) => id === event.id)) {
+					map.get(date)!.push(event);
+				}
 				return map;
 			}, new SvelteMap<string, WP_REST_API_Event[]>());
 	});
@@ -65,6 +68,29 @@
 		}
 
 		goto(href, { replaceState: true, keepFocus: true, noScroll: true });
+	});
+
+	const timelineDayElements = new SvelteMap<string, HTMLLIElement>();
+
+	const focusTimelineDay = (day: string) => {
+		const element = timelineDayElements.get(day);
+
+		if (!element) {
+			return;
+		}
+
+		element.scrollIntoView({ block: 'start', behavior: 'smooth' });
+		element.focus({ preventScroll: true });
+	};
+
+	$effect(() => {
+		const day = value?.toString();
+
+		if (!day || !eventsPerDay.has(day)) {
+			return;
+		}
+
+		focusTimelineDay(day);
 	});
 </script>
 
@@ -108,7 +134,11 @@
 		<div class="max-h-[70vh] overflow-auto px-4 py-5">
 			<ol class="space-y-6">
 				{#each eventsPerDay.entries() as [day, events] (day)}
-					<li class="rounded-md border p-3">
+					<li
+						class="rounded-md border p-3"
+						tabindex="-1"
+						bind:this={() => timelineDayElements.get(day), (v) => timelineDayElements.set(day, v)}
+					>
 						<div class="flex items-center justify-between">
 							<div>
 								<span class="text-3xl font-bold tracking-tight text-primary">
@@ -125,14 +155,18 @@
 
 						<div class="mt-3 space-y-3">
 							{#each events as event (event.id)}
+								{@const groupNames = getGroupNames(event._embedded?.['wp:term'])}
 								<div class="flex items-center gap-2">
 									<div class="h-2 w-2 rounded-full bg-primary/60"></div>
 									<div>
 										<p class="text-sm font-medium">{@html event.title.rendered}</p>
 										<p class="text-xs text-muted-foreground">
-											{event.acf.zeit_von}
+											{#if groupNames.length > 0}
+												<span>{groupNames.join(', ')} | </span>
+											{/if}
+											<span>{event.acf.zeit_von}</span>
 											{#if event.acf.zeit_bis}
-												- {event.acf.zeit_bis}
+												<span>- {event.acf.zeit_bis}</span>
 											{/if}
 										</p>
 									</div>
