@@ -72,11 +72,13 @@
 	locale="de"
 >
 	{#snippet day({ day, outsideMonth })}
-		<CalendarDay class="flex flex-col items-center justify-start p-2">
+		<CalendarDay
+			class="flex flex-col items-center justify-start p-2 data-selected:bg-primary/10! data-selected:text-primary! data-selected:ring-2 data-selected:ring-primary/50"
+		>
 			{day.day}
 
 			{#if !outsideMonth && eventsPerDay.has(day.toString())}
-				<span class="mt-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+				<span class="mt-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
 					{eventsPerDay.get(day.toString())?.length} Events
 				</span>
 			{/if}
