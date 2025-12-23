@@ -1,5 +1,4 @@
 import { getEvents } from '$lib/event.svelte';
-import type { WP_REST_API_Event } from '$lib/models/wordpress';
 import { endOfMonth, getLocalTimeZone, startOfMonth, today, type CalendarDate } from '@internationalized/date';
 import { SvelteDate } from 'svelte/reactivity';
 import type { PageLoad } from './$types';
@@ -25,19 +24,12 @@ function parseYearMonth(year?: string, month?: string): { from: CalendarDate; to
 export const load: PageLoad = async ({ params }) => {
 	const { from, to } = parseYearMonth(params.year, params.month);
 
-	const events: WP_REST_API_Event[] = [];
-	let page = 1;
-	let totalPages: number;
-
-	do {
-		const response = await getEvents(new SvelteDate(from), new SvelteDate(to), page++);
-		events.push(...response.events);
-		totalPages = response.totalPages;
-	} while (page <= (totalPages || 0));
+	const firstBatch = await getEvents(new SvelteDate(from), new SvelteDate(to), 1);
 
 	return {
-		events: events,
-		year: from.year,
-		month: from.month,
+		initialEvents: firstBatch.events,
+		totalPages: firstBatch.totalPages,
+		from,
+		to,
 	};
 };

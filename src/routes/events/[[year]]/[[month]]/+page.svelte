@@ -3,32 +3,34 @@
 	import { resolve } from '$app/paths';
 	import CalendarDay from '$lib/components/ui/calendar/calendar-day.svelte';
 	import { Calendar } from '$lib/components/ui/calendar/index.js';
-	import type { WP_REST_API_Event } from '$lib/models/wordpress';
+	import { getEvents } from '$lib/event.svelte';
+	import type { WP_REST_API_Event, WP_REST_API_Events } from '$lib/models/wordpress';
 	import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date';
-	import { SvelteMap } from 'svelte/reactivity';
+	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	let value = $state(today(getLocalTimeZone()));
-	let placeholder = $derived(new CalendarDate(data.year, data.month, 1));
+	let events = $state<WP_REST_API_Events>([]);
 
-	let lastRouted: string | null = null;
 	$effect(() => {
-		const { year, month } = placeholder;
-		const next = `/events/${year}/${String(month).padStart(2, '0')}`;
+		events = [...data.initialEvents];
 
-		if (lastRouted === next) {
-			return;
+		if (data.totalPages > 1) {
+			loadRemainingPages();
 		}
-		lastRouted = next;
-
-		goto(resolve(next), { replaceState: true, keepFocus: true, noScroll: true });
 	});
+
+	const loadRemainingPages = async () => {
+		for (let page = 2; page <= data.totalPages; page++) {
+			const batch = await getEvents(new SvelteDate(data.from), new SvelteDate(data.to), page);
+			events.push(...batch.events);
+		}
+	};
 
 	let eventsPerDay = $derived.by(() => {
 		const map = new SvelteMap<string, WP_REST_API_Event[]>();
-		for (const event of data.events) {
+		for (const event of events) {
 			const date = new Date(event.acf.event_datum).toISOString().split('T')[0];
 			if (!map.has(date)) {
 				map.set(date, []);
@@ -36,6 +38,20 @@
 			map.get(date)?.push(event);
 		}
 		return map;
+	});
+
+	let value = $state(today(getLocalTimeZone()));
+	let placeholder = $derived(new CalendarDate(data.from.year, data.from.month, 1));
+
+	$effect(() => {
+		const { year, month } = placeholder;
+		const next = `/events/${year}/${String(month).padStart(2, '0')}`;
+
+		if (window.location.pathname === resolve(next)) {
+			return;
+		}
+
+		goto(resolve(next), { replaceState: true, keepFocus: true, noScroll: true });
 	});
 </script>
 

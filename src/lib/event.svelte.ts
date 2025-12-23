@@ -10,7 +10,7 @@ interface EventMeta {
 	totalPages: number;
 }
 
-const PER_PAGE = 10;
+const PER_PAGE = 20;
 
 export const eventState = $state<{
 	byDate: SvelteMap<DateKey, { events: SvelteMap<PageNumber, WP_REST_API_Events> } & EventMeta>;
