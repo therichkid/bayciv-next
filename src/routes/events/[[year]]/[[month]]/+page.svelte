@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import * as Accordion from '$lib/components/ui/accordion';
 	import { Calendar } from '$lib/components/ui/calendar';
 	import CalendarDay from '$lib/components/ui/calendar/calendar-day.svelte';
 	import { getEvents } from '$lib/event.svelte';
@@ -92,15 +93,17 @@
 
 		focusTimelineDay(day);
 	});
+
+	let expandedEventId = $state<string | undefined>(undefined);
 </script>
 
-<div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-	<div>
+<div class="flex w-full flex-col gap-6 lg:flex-row">
+	<div class="w-fit shrink-0 grow lg:grow-0">
 		<Calendar
 			type="single"
 			bind:value
 			bind:placeholder
-			class="rounded-lg border shadow-sm [--cell-size:--spacing(18)]"
+			class="rounded-lg border shadow-sm [--cell-size:--spacing(16)] md:[--cell-size:--spacing(18)]"
 			captionLayout="label"
 			locale="de"
 		>
@@ -120,7 +123,7 @@
 		</Calendar>
 	</div>
 
-	<aside class="rounded-lg border shadow-sm xl:col-span-2">
+	<aside class="grow rounded-lg border shadow-sm">
 		<div class="border-b px-4 py-5">
 			<h1 class="mb-5 text-lg font-semibold">Veranstaltungen</h1>
 			<p class="text-xs text-muted-foreground">
@@ -131,7 +134,7 @@
 			</p>
 		</div>
 
-		<div class="max-h-[70vh] overflow-auto px-4 py-5">
+		<div class="max-h-[70vh] w-full overflow-auto px-4 py-5">
 			<ol class="space-y-6">
 				{#each eventsPerDay.entries() as [day, events] (day)}
 					<li
@@ -154,24 +157,33 @@
 						</div>
 
 						<div class="mt-3 space-y-3">
-							{#each events as event (event.id)}
-								{@const groupNames = getGroupNames(event._embedded?.['wp:term'])}
-								<div class="flex items-center gap-2">
-									<div class="h-2 w-2 rounded-full bg-primary/60"></div>
-									<div>
-										<p class="text-sm font-medium">{@html event.title.rendered}</p>
-										<p class="text-xs text-muted-foreground">
-											{#if groupNames.length > 0}
-												<span>{groupNames.join(', ')} | </span>
-											{/if}
-											<span>{event.acf.zeit_von}</span>
-											{#if event.acf.zeit_bis}
-												<span>- {event.acf.zeit_bis}</span>
-											{/if}
-										</p>
-									</div>
-								</div>
-							{/each}
+							<Accordion.Root type="single" class="w-full" bind:value={expandedEventId}>
+								{#each events as event (event.id)}
+									{@const groupNames = getGroupNames(event._embedded?.['wp:term'])}
+
+									<Accordion.Item value={String(event.id)}>
+										<Accordion.Trigger
+											><div class="flex items-center gap-2">
+												<div>
+													<p class="text-sm font-medium">{@html event.title.rendered}</p>
+													<p class="text-xs text-muted-foreground">
+														{#if groupNames.length > 0}
+															<span>{groupNames.join(', ')} | </span>
+														{/if}
+														<span>{event.acf.zeit_von}</span>
+														{#if event.acf.zeit_bis}
+															<span>- {event.acf.zeit_bis}</span>
+														{/if}
+													</p>
+												</div>
+											</div></Accordion.Trigger
+										>
+										<Accordion.Content>
+											<div>{@html event.content.rendered}</div>
+										</Accordion.Content>
+									</Accordion.Item>
+								{/each}
+							</Accordion.Root>
 						</div>
 					</li>
 				{/each}
