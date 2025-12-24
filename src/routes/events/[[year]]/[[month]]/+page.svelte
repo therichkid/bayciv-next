@@ -179,7 +179,9 @@
 											</div></Accordion.Trigger
 										>
 										<Accordion.Content>
-											<div>{@html event.content.rendered}</div>
+											<div class="prose-md prose-a:text-primary prose-a:hover:underline">
+												{@html event.content.rendered}
+											</div>
 										</Accordion.Content>
 									</Accordion.Item>
 								{/each}
